@@ -22,3 +22,6 @@ Specify limits which you want to place on queues inside sidekiq.yml:
 In this example, tasks for the first restricted queue will be run by at most 5
 workers at the same time and the second queue will have no more than 10
 workers simultaneously.
+
+Sponsored by [Evil Martians].
+[Evil Martians]: http://evilmartians.com/
