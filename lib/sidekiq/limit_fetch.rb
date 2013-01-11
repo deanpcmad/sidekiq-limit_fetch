@@ -1,4 +1,5 @@
 require 'sidekiq'
+require 'sidekiq/fetch'
 
 class Sidekiq::LimitFetch
   require_relative 'limit_fetch/semaphore'
@@ -23,7 +24,7 @@ class Sidekiq::LimitFetch
     end
 
     if message
-      queue = queues.find {|it| it.name == queue_name }
+      queue = queues.find {|it| it.full_name == queue_name }
       queues.delete queue
 
       UnitOfWork.new queue, message
