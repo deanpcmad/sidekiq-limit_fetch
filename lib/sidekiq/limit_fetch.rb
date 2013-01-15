@@ -24,9 +24,7 @@ class Sidekiq::LimitFetch
     end
 
     if message
-      queue = queues.find {|it| it.full_name == queue_name }
-      queues.delete queue
-
+      queue = queues.delete queues.find {|it| it.full_name == queue_name }
       UnitOfWork.new queue, message
     end
   ensure
