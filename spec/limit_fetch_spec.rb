@@ -1,11 +1,11 @@
-require 'sidekiq/limit_fetch'
+require 'spec_helper'
 
 describe Sidekiq::LimitFetch do
   before :each do
     Sidekiq.redis do |it|
-      it.del 'queue:example'
-      it.rpush 'queue:example', 'task'
-      it.expire 'queue:example', 30
+      it.del 'queue:example1'
+      it.rpush 'queue:example1', 'task'
+      it.expire 'queue:example1', 30
     end
   end
 
@@ -14,21 +14,21 @@ describe Sidekiq::LimitFetch do
   end
 
   def new_fetcher(options={})
-    described_class.new options.merge queues: %w(example example example2 example2)
+    described_class.new options.merge queues: %w(example1 example1 example2 example2)
   end
 
   it 'should retrieve weighted queues' do
     fetcher = new_fetcher
-    queues(fetcher).should =~ %w(queue:example queue:example2)
+    queues(fetcher).should =~ %w(queue:example1 queue:example2)
   end
 
   it 'should retrieve strictly ordered queues' do
     fetcher = new_fetcher strict: true
-    queues(fetcher).should == %w(queue:example queue:example2)
+    queues(fetcher).should == %w(queue:example1 queue:example2)
   end
 
-  it 'should retrieve limited queues' do
-    fetcher = new_fetcher strict: true, limits: { 'example' => 2 }
+  it 'should retrieve only available queues' do
+    fetcher = new_fetcher strict: true, limits: { 'example1' => 2 }
     queues = -> { fetcher.available_queues }
 
     queues1 = queues.call
@@ -47,11 +47,11 @@ describe Sidekiq::LimitFetch do
   end
 
   it 'should acquire lock on queue for excecution' do
-    fetcher = new_fetcher limits: { 'example' => 1, 'example2' => 1 }
+    fetcher = new_fetcher limits: { 'example1' => 1, 'example2' => 1 }
     work = fetcher.retrieve_work
     work.message.should == 'task'
-    work.queue.should == 'queue:example'
-    work.queue_name.should == 'example'
+    work.queue.should == 'queue:example1'
+    work.queue_name.should == 'example1'
 
     queues = fetcher.available_queues
     queues.should have(1).item
@@ -63,5 +63,19 @@ describe Sidekiq::LimitFetch do
     work.acknowledge
 
     fetcher.available_queues.should have(2).items
+  end
+
+  it 'should set queue limits on the fly' do
+    Sidekiq::Queue['example1'].limit = 1
+    Sidekiq::Queue['example2'].limit = 2
+
+    fetcher = new_fetcher
+
+    fetcher.available_queues.should have(2).item
+    fetcher.available_queues.should have(1).item
+    fetcher.available_queues.should have(0).item
+
+    Sidekiq::Queue['example1'].limit = 2
+    fetcher.available_queues.should have(1).item
   end
 end

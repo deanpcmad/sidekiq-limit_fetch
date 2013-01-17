@@ -3,10 +3,15 @@ require 'sidekiq/fetch'
 
 class Sidekiq::LimitFetch
   require_relative 'limit_fetch/semaphore'
-  require_relative 'limit_fetch/queue'
   require_relative 'limit_fetch/unit_of_work'
+  require_relative 'limit_fetch/singleton'
+  require_relative 'limit_fetch/queue'
 
   Sidekiq.options[:fetch] = self
+
+  def self.bulk_requeue(jobs)
+    Sidekiq::BasicFetch.bulk_requeue jobs
+  end
 
   def initialize(options)
     prepare_queues options
@@ -19,6 +24,12 @@ class Sidekiq::LimitFetch
 
   def retrieve_work
     queues = available_queues
+
+    if queues.empty?
+      sleep Sidekiq::Fetcher::TIMEOUT
+      return
+    end
+
     queue_name, message = Sidekiq.redis do |it|
       it.brpop *queues.map(&:full_name), Sidekiq::Fetcher::TIMEOUT
     end
@@ -34,11 +45,11 @@ class Sidekiq::LimitFetch
   private
 
   def prepare_queues(options)
-    cache = {}
     limits = options[:limits] || {}
-
     @queues = options[:queues].map do |name|
-      cache[name] ||= Queue.new name, limits[name]
+      Sidekiq::Queue.new(name).tap do |it|
+        it.limit = limits[name] if limits[name]
+      end
     end
   end
 

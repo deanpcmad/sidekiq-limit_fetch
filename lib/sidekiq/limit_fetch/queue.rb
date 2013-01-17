@@ -1,14 +1,14 @@
-class Sidekiq::LimitFetch
+module Sidekiq
   class Queue
-    extend Forwardable
+    extend LimitFetch::Singleton, Forwardable
+    def_delegators :lock, :limit, :limit=, :acquire, :release, :busy
 
-    attr_reader :name, :full_name
-    def_delegators :@lock, :acquire, :release
+    def full_name
+      @rname
+    end
 
-    def initialize(name, limit)
-      @name = name
-      @full_name = "queue:#{name}"
-      @lock = Semaphore.for limit
+    def lock
+      @lock ||= LimitFetch::Semaphore.new
     end
   end
 end

@@ -1,28 +1,26 @@
 class Sidekiq::LimitFetch::Semaphore
-  Stub = Struct.new(:acquire, :release)
+  attr_reader :limit, :busy
 
-  def self.for(limit)
-    limit ? new(limit) : stub
+  def initialize
+    @lock = Mutex.new
+    @busy = 0
   end
 
-  def self.stub
-    @stub ||= Stub.new(true, true)
-  end
-
-  def initialize(limit)
-    @lock  = Mutex.new
-    @limit = limit
+  def limit=(value)
+    @lock.synchronize do
+      @limit = value
+    end
   end
 
   def acquire
     @lock.synchronize do
-      @limit -= 1 if @limit > 0
+      @busy += 1 if not @limit or @limit > @busy
     end
   end
 
   def release
     @lock.synchronize do
-      @limit += 1
+      @busy -= 1
     end
   end
 end
