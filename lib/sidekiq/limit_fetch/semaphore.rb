@@ -4,6 +4,7 @@ class Sidekiq::LimitFetch::Semaphore
   def initialize
     @lock = Mutex.new
     @busy = 0
+    @paused = false
   end
 
   def limit=(value)
@@ -13,6 +14,7 @@ class Sidekiq::LimitFetch::Semaphore
   end
 
   def acquire
+    return if @paused
     @lock.synchronize do
       @busy += 1 if not @limit or @limit > @busy
     end
@@ -22,5 +24,13 @@ class Sidekiq::LimitFetch::Semaphore
     @lock.synchronize do
       @busy -= 1
     end
+  end
+
+  def pause
+    @paused = true
+  end
+
+  def continue
+    @paused = false
   end
 end

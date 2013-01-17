@@ -1,7 +1,12 @@
 module Sidekiq
   class Queue
     extend LimitFetch::Singleton, Forwardable
-    def_delegators :lock, :limit, :limit=, :acquire, :release, :busy
+
+    def_delegators :lock,
+      :limit,   :limit=,
+      :acquire, :release,
+      :pause,   :continue,
+      :busy
 
     def full_name
       @rname
