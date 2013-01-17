@@ -1,6 +1,6 @@
 ## Description
 
-Sidekig strategy to restrict number of workers
+Sidekiq strategy to restrict number of workers
 which are able to run specified queues simultaneously.
 
 ## Installation
