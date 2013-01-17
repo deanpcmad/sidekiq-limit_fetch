@@ -41,7 +41,7 @@ will be preserved.
   Sidekiq::Queue['name'].continue # allows workers to use the queue with the same limit
 ```
 
-Limits are applied strictly for current process.
+Limits are applied strictly per process.
 
 Sponsored by [Evil Martians].
 [Evil Martians]: http://evilmartians.com/
