@@ -32,6 +32,15 @@ workers simultaneously.
 Ability to set limits dynamically allows you to resize worker
 distribution among queues any time you want.
 
+You can also pause your queues temporarely. Upon continuing their limits
+will be preserved.
+
+```ruby
+  Sidekiq::Queue['name'].pause # prevents workers from running tasks from this queue
+  ...
+  Sidekiq::Queue['name'].continue # allows workers to use the queue with the same limit
+```
+
 Limits are applied strictly for current process.
 
 Sponsored by [Evil Martians].
