@@ -1,12 +1,12 @@
 Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-limit_fetch'
-  gem.version       = '0.3'
+  gem.version       = '0.4'
   gem.authors       = 'brainopia'
   gem.email         = 'brainopia@evilmartians.com'
-  gem.summary       = 'Sidekig strategy to support queue limits'
+  gem.summary       = 'Sidekiq strategy to support queue limits'
   gem.homepage      = 'https://github.com/brainopia/sidekiq-limit_fetch'
   gem.description   = <<-DESCRIPTION
-    Sidekig strategy to restrict number of workers
+    Sidekiq strategy to restrict number of workers
     which are able to run specified queues simultaneously.
   DESCRIPTION
 
