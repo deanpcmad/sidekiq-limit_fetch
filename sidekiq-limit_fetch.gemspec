@@ -14,6 +14,6 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep %r{^spec/}
   gem.require_paths = %w(lib)
 
-  gem.add_dependency 'sidekiq', '>= 2.6.3'
+  gem.add_dependency 'sidekiq', '>= 2.6.5'
   gem.add_development_dependency 'rspec'
 end
