@@ -41,7 +41,9 @@ will be preserved.
   Sidekiq::Queue['name'].continue # allows workers to use the queue with the same limit
 ```
 
-Limits are applied strictly per process.
+Limits are applied per process. In case you have several worker
+processes and want to have global locks between them, you'll need to
+wait just a bit more since support for global locks is underway.
 
 Sponsored by [Evil Martians].
 [Evil Martians]: http://evilmartians.com/
