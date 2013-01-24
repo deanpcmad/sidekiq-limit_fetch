@@ -3,6 +3,9 @@
 Sidekiq strategy to restrict number of workers
 which are able to run specified queues simultaneously.
 
+[![Gem
+Version](https://badge.fury.io/rb/sidekiq-limit_fetch.png)](http://badge.fury.io/rb/sidekiq-limit_fetch)
+
 ## Installation
 
 Add this line to your application's Gemfile:
