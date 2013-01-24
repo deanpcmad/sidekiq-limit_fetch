@@ -22,7 +22,7 @@ describe Sidekiq::LimitFetch::Global::Monitor do
       2.times { queue.acquire }
       described_class.send(:invalidate_old_processors)
       queue.busy.should == 2
-      sleep 2
+      sleep 3
       described_class.send(:invalidate_old_processors)
       queue.busy.should == 0
     end
