@@ -23,9 +23,9 @@ Add this line to your application's Gemfile:
 Specify limits which you want to place on queues inside sidekiq.yml:
 
 ```yaml
-:limits:
-  queue_name1: 5
-  queue_name2: 10
+  :limits:
+    queue_name1: 5
+    queue_name2: 10
 ```
 
 Or set it dynamically in your code:
@@ -41,6 +41,7 @@ workers simultaneously.
 Ability to set limits dynamically allows you to resize worker
 distribution among queues any time you want.
 
+
 You can also pause your queues temporarely. Upon continuing their limits
 will be preserved.
 
@@ -50,13 +51,24 @@ will be preserved.
   Sidekiq::Queue['name'].continue # allows workers to use the queue with the same limit
 ```
 
+
+You can see how many workers currently handling a queue, eg:
+
+```ruby
+  Sidekiq::Queue['name'].busy # number of busy workers
+```
+
+
 Limits are applied per process. In case you have several worker
 processes and want to have global locks between them, you'll need to
 enable global mode by setting global option, eg:
 
 ```yaml
-:global: true
+  :global: true
 ```
+
+
+
 
 Sponsored by [Evil Martians].
 [Evil Martians]: http://evilmartians.com/
