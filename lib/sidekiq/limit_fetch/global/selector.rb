@@ -10,6 +10,10 @@ module Sidekiq::LimitFetch::Global
       redis_eval :release, [namespace, uuid, queues]
     end
 
+    def uuid
+      @uuid ||= SecureRandom.uuid
+    end
+
     private
 
     def namespace
@@ -17,10 +21,6 @@ module Sidekiq::LimitFetch::Global
         namespace = Sidekiq.options[:namespace]
         namespace + ':' if namespace
       end
-    end
-
-    def uuid
-      @uuid ||= SecureRandom.uuid
     end
 
     def redis_eval(script_name, args)

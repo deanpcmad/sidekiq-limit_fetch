@@ -9,6 +9,7 @@ class Sidekiq::LimitFetch
   require_relative 'limit_fetch/local/selector'
   require_relative 'limit_fetch/global/semaphore'
   require_relative 'limit_fetch/global/selector'
+  require_relative 'limit_fetch/global/monitor'
   require_relative 'extensions/queue'
 
   Sidekiq.options[:fetch] = self
@@ -18,6 +19,7 @@ class Sidekiq::LimitFetch
   end
 
   def initialize(options)
+    Global::Monitor.start! if options[:global]
     @queues = Queues.new options
   end
 
