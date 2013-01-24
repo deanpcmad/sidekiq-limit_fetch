@@ -21,7 +21,7 @@ Specify limits which you want to place on queues inside sidekiq.yml:
 
 Or set it dynamically in your code:
 ```ruby
-  Sidekiq::Queue.new('queue_name1').limit = 5
+  Sidekiq::Queue['queue_name1'].limit = 5
   Sidekiq::Queue['queue_name2'].limit = 10
 ```
 
@@ -43,7 +43,11 @@ will be preserved.
 
 Limits are applied per process. In case you have several worker
 processes and want to have global locks between them, you'll need to
-wait just a bit more since support for global locks is underway.
+enable global mode by setting global option, eg:
+
+```yaml
+:global: true
+```
 
 Sponsored by [Evil Martians].
 [Evil Martians]: http://evilmartians.com/

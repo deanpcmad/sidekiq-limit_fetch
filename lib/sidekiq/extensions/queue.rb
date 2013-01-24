@@ -8,12 +8,12 @@ module Sidekiq
       :pause,   :continue,
       :busy
 
-    def full_name
-      @rname
+    def lock
+      @lock ||= mode::Semaphore.new name
     end
 
-    def lock
-      @lock ||= LimitFetch::Semaphore.new
+    def mode
+      Sidekiq.options[:global] ? LimitFetch::Global : LimitFetch::Local
     end
   end
 end
