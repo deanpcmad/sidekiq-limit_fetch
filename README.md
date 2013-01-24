@@ -9,6 +9,8 @@ Status](https://secure.travis-ci.org/brainopia/sidekiq-limit_fetch.png)](http://
 Version](https://badge.fury.io/rb/sidekiq-limit_fetch.png)](http://badge.fury.io/rb/sidekiq-limit_fetch)
 [![Dependency
 Status](https://gemnasium.com/brainopia/sidekiq-limit_fetch.png)](https://gemnasium.com/sidekiq-limit_fetch)
+{<img src="https://codeclimate.com/badge.png"
+/>}[https://codeclimate.com/github/brainopia/sidekiq-limit_fetch]
 
 ## Installation
 
