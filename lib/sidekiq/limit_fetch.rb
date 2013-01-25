@@ -37,6 +37,7 @@ class Sidekiq::LimitFetch
   end
 
   def redis_blpop(*args)
+    return if args.size < 2
     Sidekiq.redis {|it| it.blpop *args }
   end
 end

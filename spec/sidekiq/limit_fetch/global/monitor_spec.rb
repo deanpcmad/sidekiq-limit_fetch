@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Sidekiq::LimitFetch::Global::Monitor do
   let(:global) { true }
   let(:monitor) { described_class.start! ttl, timeout }
-  let(:ttl) { 2 }
+  let(:ttl) { 3 }
   let(:queue) { Sidekiq::Queue[name] }
   let(:name) { 'default' }
 
@@ -22,7 +22,7 @@ describe Sidekiq::LimitFetch::Global::Monitor do
       2.times { queue.acquire }
       described_class.send(:invalidate_old_processors)
       queue.busy.should == 2
-      sleep 4
+      sleep 5
       described_class.send(:invalidate_old_processors)
       queue.busy.should == 0
     end

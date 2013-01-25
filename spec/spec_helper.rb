@@ -10,6 +10,7 @@ RSpec.configure do |config|
         it.del "limit_fetch:limit:#{queue}"
         it.del "limit_fetch:busy:#{queue}"
         it.del "limit_fetch:pause:#{queue}"
+        it.del "limit_fetch:block:#{queue}"
       end
 
       clean_redis.call(name) if defined?(name)
