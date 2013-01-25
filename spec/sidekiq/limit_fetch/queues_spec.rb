@@ -7,9 +7,14 @@ describe Sidekiq::LimitFetch::Queues do
   let(:limits) {{ 'queue1' => 3 }}
   let(:strict) { true }
   let(:global) { false }
+  let(:blocking) { nil }
 
   let(:options) do
-    { queues: queues, limits: limits, strict: strict, global: global }
+    { queues: queues,
+      limits: limits,
+      strict: strict,
+      global: global,
+      blocking: blocking }
   end
 
   after(:each ) do
@@ -23,7 +28,7 @@ describe Sidekiq::LimitFetch::Queues do
       Sidekiq::Queue['queue2'].busy.should == 1
     end
 
-    it 'should acquire blocking queues' do
+    it 'should acquire dynamically blocking queues' do
       subject.acquire
       Sidekiq::Queue['queue1'].busy.should == 1
       Sidekiq::Queue['queue2'].busy.should == 1
@@ -48,8 +53,18 @@ describe Sidekiq::LimitFetch::Queues do
       Sidekiq::Queue['queue1'].busy.should == 1
       Sidekiq::Queue['queue2'].busy.should == 0
     end
+
+    context 'blocking' do
+      let(:blocking) { %w(queue1) }
+
+      it 'should acquire blocking queues' do
+        3.times { subject.acquire }
+        Sidekiq::Queue['queue1'].busy.should == 3
+        Sidekiq::Queue['queue2'].busy.should == 1
+      end
+    end
   end
-  
+
   context 'without global flag' do
     it_should_behave_like :selector
 

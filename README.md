@@ -67,6 +67,12 @@ enable global mode by setting global option, eg:
   :global: true
 ```
 
+or
+
+```ruby
+  Sidekiq.options[:global] = true
+```
+
 
 If you use strict queue ordering (it will be used if you don't specify queue weights)
 then you can set blocking status for queues. It means if a blocking
@@ -78,7 +84,7 @@ be ran. Eg,
     - a
     - b
     - c
-  :limits:
+  :blocking:
     - b
 ```
 

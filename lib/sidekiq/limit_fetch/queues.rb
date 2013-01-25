@@ -9,6 +9,7 @@ class Sidekiq::LimitFetch
 
       set_selector options[:global]
       set_limits options[:limits]
+      set_blocks options[:blocking]
     end
 
     def acquire
@@ -16,7 +17,7 @@ class Sidekiq::LimitFetch
         .tap {|it| save it }
         .map {|it| "queue:#{it}" }
     end
-    
+
     def release_except(full_name)
       @selector.release restore.delete_if {|name| full_name.to_s.include? name }
     end
@@ -28,10 +29,15 @@ class Sidekiq::LimitFetch
     end
 
     def set_limits(limits)
-      ordered_queues.each do |name|
-        Sidekiq::Queue[name].tap do |it|
-          it.limit = (limits || {})[name]
-        end
+      return unless limits
+      limits.each do |name, limit|
+        Sidekiq::Queue[name].limit = limit
+      end
+    end
+
+    def set_blocks(blocks)
+      blocks.to_a.each do |name|
+        Sidekiq::Queue[name].block
       end
     end
 
