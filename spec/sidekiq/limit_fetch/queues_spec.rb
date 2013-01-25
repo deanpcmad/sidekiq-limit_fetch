@@ -23,6 +23,18 @@ describe Sidekiq::LimitFetch::Queues do
       Sidekiq::Queue['queue2'].busy.should == 1
     end
 
+    it 'should acquire blocking queues' do
+      subject.acquire
+      Sidekiq::Queue['queue1'].busy.should == 1
+      Sidekiq::Queue['queue2'].busy.should == 1
+
+      Sidekiq::Queue['queue1'].block
+
+      subject.acquire
+      Sidekiq::Queue['queue1'].busy.should == 2
+      Sidekiq::Queue['queue2'].busy.should == 1
+    end
+
     it 'should release queues' do
       subject.acquire
       subject.release_except nil

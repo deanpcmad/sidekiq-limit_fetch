@@ -32,8 +32,24 @@ module Sidekiq::LimitFetch::Local
       @paused = true
     end
 
-    def continue
+    def unpause
       @paused = false
+    end
+
+    def paused?
+      @paused
+    end
+
+    def block
+      @block = true
+    end
+
+    def unblock
+      @block = false
+    end
+
+    def blocking?
+      @block
     end
   end
 end

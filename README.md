@@ -47,12 +47,12 @@ will be preserved.
 
 ```ruby
   Sidekiq::Queue['name'].pause # prevents workers from running tasks from this queue
-  ...
-  Sidekiq::Queue['name'].continue # allows workers to use the queue with the same limit
+  Sidekiq::Queue['name'].paused? # => true
+  Sidekiq::Queue['name'].unpause # allows workers to use the queue
 ```
 
 
-You can see how many workers currently handling a queue, eg:
+You can see how many workers currently handling a queue:
 
 ```ruby
   Sidekiq::Queue['name'].busy # number of busy workers
@@ -68,6 +68,30 @@ enable global mode by setting global option, eg:
 ```
 
 
+If you use strict queue ordering (it will be used if you don't specify queue weights)
+then you can set blocking status for queues. It means if a blocking
+queue task is executing then no new task from lesser priority queues will
+be ran. Eg,
+
+```yaml
+  :queues:
+    - a
+    - b
+    - c
+  :limits:
+    - b
+```
+
+In this case when a task for `b` queue is ran no new task from `c` queue
+will be started.
+
+You can also enable and disable blocking mode for queues on the fly:
+
+```ruby
+  Sidekiq::Queue['name'].block
+  Sidekiq::Queue['name'].blocking? # => true
+  Sidekiq::Queue['name'].unblock
+```
 
 
 Sponsored by [Evil Martians].

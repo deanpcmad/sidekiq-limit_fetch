@@ -5,7 +5,9 @@ module Sidekiq
     def_delegators :lock,
       :limit,   :limit=,
       :acquire, :release,
-      :pause,   :continue,
+      :pause,   :unpause,
+      :block,   :unblock,
+      :paused?, :blocking?,
       :busy
 
     def lock

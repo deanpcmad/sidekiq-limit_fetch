@@ -40,7 +40,7 @@ describe Sidekiq::Queue do
 
         it 'should be continuable' do
           queue.pause
-          queue.continue
+          queue.unpause
           queue.acquire.should be
         end
 
@@ -68,6 +68,22 @@ describe Sidekiq::Queue do
           queue.busy.should == 1
           queue.release
           queue.busy.should == 0
+        end
+
+        it 'should tell if paused' do
+          queue.should_not be_paused
+          queue.pause
+          queue.should be_paused
+          queue.unpause
+          queue.should_not be_paused
+        end
+
+        it 'should tell if blocking' do
+          queue.should_not be_blocking
+          queue.block
+          queue.should be_blocking
+          queue.unblock
+          queue.should_not be_blocking
         end
       end
 

@@ -48,26 +48,32 @@ module Sidekiq::LimitFetch::Global
         local worker_name = table.remove(ARGV, 1)
         local queues      = ARGV
         local available   = {}
+        local queue_locks
+        local blocked
 
         for _, queue in ipairs(queues) do
-          local busy_key    = namespace..'busy:'..queue
-          local pause_key   = namespace..'pause:'..queue
-          local paused      = redis.call('get', pause_key)
+          if not blocked then
+            local busy_key    = namespace..'busy:'..queue
+            local pause_key   = namespace..'pause:'..queue
+            local paused      = redis.call('get', pause_key)
 
-          if not paused then
-            local limit_key   = namespace..'limit:'..queue
-            local queue_limit = tonumber(redis.call('get', limit_key))
+            if not paused then
+              local limit_key   = namespace..'limit:'..queue
+              local queue_limit = tonumber(redis.call('get', limit_key))
 
-            if queue_limit then
-              local queue_locks = redis.call('llen', busy_key)
+              local block_key = namespace..'block:'..queue
+              local can_block = redis.call('get', block_key)
 
-              if queue_limit > queue_locks then
+              if can_block or queue_limit then
+                queue_locks = redis.call('llen', busy_key)
+              end
+
+              blocked = can_block and queue_locks > 0
+
+              if not queue_limit or queue_limit > queue_locks then
                 redis.call('rpush', busy_key, worker_name)
                 table.insert(available, queue)
               end
-            else
-              redis.call('rpush', busy_key, worker_name)
-              table.insert(available, queue)
             end
           end
         end

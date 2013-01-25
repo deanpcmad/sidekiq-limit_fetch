@@ -40,7 +40,7 @@ describe 'semaphore' do
     it 'should unpause tasks' do
       subject.pause
       3.times { subject.acquire }
-      subject.continue
+      subject.unpause
       2.times { subject.acquire }
       subject.busy.should == 2
     end
