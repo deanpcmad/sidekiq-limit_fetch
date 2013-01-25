@@ -20,6 +20,8 @@ Add this line to your application's Gemfile:
 
 ## Usage
 
+### Limits
+
 Specify limits which you want to place on queues inside sidekiq.yml:
 
 ```yaml
@@ -42,6 +44,8 @@ Ability to set limits dynamically allows you to resize worker
 distribution among queues any time you want.
 
 
+### Pauses
+
 You can also pause your queues temporarely. Upon continuing their limits
 will be preserved.
 
@@ -58,6 +62,7 @@ You can see how many workers currently handling a queue:
   Sidekiq::Queue['name'].busy # number of busy workers
 ```
 
+### Multiple processes
 
 Limits are applied per process. In case you have several worker
 processes and want to have global locks between them, you'll need to
@@ -73,6 +78,8 @@ or
   Sidekiq.options[:global] = true
 ```
 
+
+### Blocking queue mode
 
 If you use strict queue ordering (it will be used if you don't specify queue weights)
 then you can set blocking status for queues. It means if a blocking
@@ -99,6 +106,8 @@ You can also enable and disable blocking mode for queues on the fly:
   Sidekiq::Queue['name'].unblock
 ```
 
+
+### Thanks
 
 Sponsored by [Evil Martians].
 [Evil Martians]: http://evilmartians.com/
