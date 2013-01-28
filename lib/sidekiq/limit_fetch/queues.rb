@@ -55,7 +55,7 @@ class Sidekiq::LimitFetch
     end
 
     def restore
-      Thread.current[THREAD_KEY]
+      Thread.current[THREAD_KEY] || []
     ensure
       Thread.current[THREAD_KEY] = nil
     end

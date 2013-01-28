@@ -54,6 +54,12 @@ describe Sidekiq::LimitFetch::Queues do
       Sidekiq::Queue['queue2'].busy.should == 0
     end
 
+    it 'should release when no queues was acquired' do
+      queues.each {|name| Sidekiq::Queue[name].pause }
+      subject.acquire
+      -> { subject.release_except nil }.should_not raise_exception
+    end
+
     context 'blocking' do
       let(:blocking) { %w(queue1) }
 
