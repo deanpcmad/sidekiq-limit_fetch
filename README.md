@@ -39,6 +39,13 @@ workers simultaneously.
 Ability to set limits dynamically allows you to resize worker
 distribution among queues any time you want.
 
+### Busy workers by queue
+
+You can see how many workers currently handling a queue:
+
+```ruby
+  Sidekiq::Queue['name'].busy # number of busy workers
+```
 
 ### Pauses
 
@@ -49,13 +56,6 @@ will be preserved.
   Sidekiq::Queue['name'].pause # prevents workers from running tasks from this queue
   Sidekiq::Queue['name'].paused? # => true
   Sidekiq::Queue['name'].unpause # allows workers to use the queue
-```
-
-
-You can see how many workers currently handling a queue:
-
-```ruby
-  Sidekiq::Queue['name'].busy # number of busy workers
 ```
 
 ### Multiple processes
