@@ -36,8 +36,12 @@ class Sidekiq::LimitFetch
     end
 
     def set_blocks(blocks)
-      blocks.to_a.each do |name|
-        Sidekiq::Queue[name].block
+      blocks.to_a.each do |it|
+        if it.is_a? Array
+          it.each {|name| Sidekiq::Queue[name].block_except it }
+        else
+          Sidekiq::Queue[it].block
+        end
       end
     end
 

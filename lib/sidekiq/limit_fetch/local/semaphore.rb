@@ -1,6 +1,6 @@
 module Sidekiq::LimitFetch::Local
   class Semaphore
-    attr_reader :limit, :busy
+    attr_reader :limit, :busy, :unblocked
 
     def initialize(name)
       @name = name
@@ -41,6 +41,12 @@ module Sidekiq::LimitFetch::Local
     end
 
     def block
+      @block = true
+    end
+
+    def block_except(*queues)
+      raise ArgumentError if queues.empty?
+      @unblocked = queues
       @block = true
     end
 

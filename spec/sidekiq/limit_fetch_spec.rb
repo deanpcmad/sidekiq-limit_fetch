@@ -14,7 +14,7 @@ describe Sidekiq::LimitFetch do
   let(:options) {{ queues: queues, limits: limits, global: global }}
   let(:queues) { %w(queue1 queue1 queue2 queue2) }
   let(:limits) {{ 'queue1' => 1, 'queue2' => 2 }}
-  
+
   shared_examples_for :strategy do
     it 'should acquire lock on queue for execution' do
       work = subject.retrieve_work

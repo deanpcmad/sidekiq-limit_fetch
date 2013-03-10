@@ -46,6 +46,11 @@ module Sidekiq::LimitFetch::Global
       redis {|it| it.set "#{PREFIX}:block:#@name", true }
     end
 
+    def block_except(*queues)
+      raise ArgumentError if queues.empty?
+      redis {|it| it.set "#{PREFIX}:block:#@name", queues.join(',') }
+    end
+
     def unblock
       redis {|it| it.del "#{PREFIX}:block:#@name" }
     end

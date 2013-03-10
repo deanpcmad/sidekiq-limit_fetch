@@ -3,11 +3,12 @@ module Sidekiq
     extend LimitFetch::Singleton, Forwardable
 
     def_delegators :lock,
-      :limit,   :limit=,
-      :acquire, :release,
-      :pause,   :unpause,
-      :block,   :unblock,
-      :paused?, :blocking?,
+      :limit,     :limit=,
+      :acquire,   :release,
+      :pause,     :unpause,
+      :block,     :unblock,
+      :paused?,   :blocking?,
+      :unblocked, :block_except,
       :busy
 
     def lock

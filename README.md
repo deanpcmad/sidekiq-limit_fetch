@@ -102,6 +102,29 @@ You can also enable and disable blocking mode for queues on the fly:
   Sidekiq::Queue['name'].unblock
 ```
 
+### Advanced blocking queues
+
+You can also block on array of queues. It means when any of them is
+running only queues higher and queues from their blocking group can
+run. It will be easier to understand with an example:
+
+```yaml
+  :queues:
+    - a
+    - b
+    - c
+    - d
+  :blocking:
+    - [b, c]
+```
+
+In this case tasks from `d` will be blocked when a task from queue `b` or `c` is executed.
+
+You can dynamically set exceptions for queue blocking:
+
+```ruby
+  Sidekiq::Queue['queue1'].block_except 'queue2'
+```
 
 ### Thanks
 

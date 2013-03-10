@@ -54,11 +54,12 @@ module Sidekiq::LimitFetch::Global
         local worker_name = table.remove(ARGV, 1)
         local queues      = ARGV
         local available   = {}
+        local unblocked   = {}
         local queue_locks
-        local blocked
+        local blocking_mode
 
         for _, queue in ipairs(queues) do
-          if not blocked then
+          if not blocking_mode or unblocked[queue] then
             local busy_key    = namespace..'busy:'..queue
             local pause_key   = namespace..'pause:'..queue
             local paused      = redis.call('get', pause_key)
@@ -74,7 +75,13 @@ module Sidekiq::LimitFetch::Global
                 queue_locks = redis.call('llen', busy_key)
               end
 
-              blocked = can_block and queue_locks > 0
+              blocking_mode = can_block and queue_locks > 0
+
+              if blocking_mode and can_block ~= 'true' then
+                for unblocked_queue in string.gmatch(can_block, "[^,]+") do
+                  unblocked[unblocked_queue] = true
+                end
+              end
 
               if not queue_limit or queue_limit > queue_locks then
                 redis.call('rpush', busy_key, worker_name)
