@@ -11,7 +11,13 @@ module Sidekiq::LimitFetch::Global
     end
 
     def uuid
-      @uuid ||= SecureRandom.uuid
+      # - if we'll remove "@uuid ||=" from inside of mutex
+      # then @uuid can be overwritten
+      # - if we'll remove "@uuid ||=" from outside of mutex
+      # then each read will lead to mutex
+      @uuid ||= Thread.exclusive do
+        @uuid ||= SecureRandom.uuid
+      end
     end
 
     private
