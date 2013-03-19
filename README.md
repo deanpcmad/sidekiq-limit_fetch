@@ -1,7 +1,7 @@
 ## Description
 
-Sidekiq strategy to restrict number of workers
-which are able to run specified queues simultaneously.
+Sidekiq strategy to support a granular queue control –
+limiting, pausing, blocking, querying
 
 [![Build Status](https://secure.travis-ci.org/brainopia/sidekiq-limit_fetch.png)](http://travis-ci.org/brainopia/sidekiq-limit_fetch)
 [![Gem Version](https://badge.fury.io/rb/sidekiq-limit_fetch.png)](http://badge.fury.io/rb/sidekiq-limit_fetch)
