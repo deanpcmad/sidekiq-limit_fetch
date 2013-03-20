@@ -16,7 +16,7 @@ module Sidekiq::LimitFetch::Global
       # - if we'll remove "@uuid ||=" from outside of mutex
       # then each read will lead to mutex
       @uuid ||= Thread.exclusive do
-        @uuid ||= SecureRandom.uuid
+        @uuid || SecureRandom.uuid
       end
     end
 
