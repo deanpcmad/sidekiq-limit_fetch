@@ -5,8 +5,8 @@ module Sidekiq::LimitFetch::Global
     HEARTBEAT_NAMESPACE = 'heartbeat:'
     PROCESSOR_NAMESPACE = 'processor:'
 
-    HEARTBEAT_TTL = 400
-    REFRESH_TIMEOUT = 180
+    HEARTBEAT_TTL   = 90
+    REFRESH_TIMEOUT = 60
 
     def start!(ttl=HEARTBEAT_TTL, timeout=REFRESH_TIMEOUT)
       Thread.new do
