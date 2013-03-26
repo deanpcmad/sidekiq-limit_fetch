@@ -19,7 +19,9 @@ class Sidekiq::LimitFetch
     end
 
     def release_except(full_name)
-      @selector.release restore.delete_if {|name| full_name.to_s.include? name }
+      queues = restore
+      queues.delete full_name[/queue:(.*)/, 1] if full_name
+      @selector.release queues
     end
 
     private
