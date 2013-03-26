@@ -20,11 +20,11 @@ describe Sidekiq::LimitFetch::Global::Monitor do
 
     it 'should remove invalidated old locks' do
       2.times { queue.acquire }
-      sleep ttl
+      sleep 2*ttl
       queue.busy.should == 2
 
       described_class.stub :update_heartbeat
-      sleep ttl
+      sleep 2*ttl
       queue.busy.should == 0
     end
   end
