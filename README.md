@@ -74,6 +74,8 @@ or
   Sidekiq.options[:global] = true
 ```
 
+*Note:* if you want to change limits from a rails console you also need
+to use a global mode since it's a different from a worker process.
 
 ### Blocking queue mode
 
