@@ -88,12 +88,12 @@ describe Sidekiq::Queue do
       end
 
       context 'global' do
-        before(:all) { Sidekiq.options[:global] = true }
+        before(:all) { Sidekiq.options[:local] = false }
         it_behaves_like :lock
       end
 
       context 'local' do
-        before(:all) { Sidekiq.options[:global] = false }
+        before(:all) { Sidekiq.options[:local] = true }
         it_behaves_like :lock
       end
     end

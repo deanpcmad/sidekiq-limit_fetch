@@ -11,7 +11,7 @@ describe Sidekiq::LimitFetch do
   end
 
   subject { described_class.new options }
-  let(:options) {{ queues: queues, limits: limits, global: global }}
+  let(:options) {{ queues: queues, limits: limits, local: local }}
   let(:queues) { %w(queue1 queue1 queue2 queue2) }
   let(:limits) {{ 'queue1' => 1, 'queue2' => 2 }}
 
@@ -36,12 +36,12 @@ describe Sidekiq::LimitFetch do
   end
 
   context 'global' do
-    let(:global) { true }
+    let(:local) { false }
     it_behaves_like :strategy
   end
 
   context 'local' do
-    let(:global) { false }
+    let(:local) { true }
     it_behaves_like :strategy
   end
 end

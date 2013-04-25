@@ -19,7 +19,7 @@ class Sidekiq::LimitFetch
   end
 
   def initialize(options)
-    Global::Monitor.start! if options[:global]
+    Global::Monitor.start! unless options[:local]
     @queues = Queues.new options
   end
 

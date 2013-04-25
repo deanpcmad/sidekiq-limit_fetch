@@ -3,17 +3,17 @@ require 'spec_helper'
 describe Sidekiq::LimitFetch::Queues do
   subject { described_class.new options }
 
-  let(:queues) { %w[queue1 queue2] }
-  let(:limits) {{ 'queue1' => 3 }}
-  let(:strict) { true }
-  let(:global) { false }
-  let(:blocking) { nil }
+  let(:queues)   { %w[queue1 queue2] }
+  let(:limits)   {{ 'queue1' => 3 }}
+  let(:strict)   { true }
+  let(:local)    {}
+  let(:blocking) {}
 
   let(:options) do
-    { queues: queues,
-      limits: limits,
-      strict: strict,
-      global: global,
+    { queues:   queues,
+      limits:   limits,
+      strict:   strict,
+      local:    local,
       blocking: blocking }
   end
 
@@ -83,20 +83,20 @@ describe Sidekiq::LimitFetch::Queues do
     end
   end
 
-  context 'without global flag' do
+  context 'without local flag' do
     it_should_behave_like :selector
 
-    it 'without global flag should be local' do
-      subject.selector.should == Sidekiq::LimitFetch::Local::Selector
+    it 'without local flag should be global' do
+      subject.selector.should == Sidekiq::LimitFetch::Global::Selector
     end
   end
 
-  context 'with global flag' do
-    let(:global) { true }
+  context 'with local flag' do
+    let(:local) { true }
     it_should_behave_like :selector
 
-    it 'should use global selector' do
-      subject.selector.should == Sidekiq::LimitFetch::Global::Selector
+    it 'should use local selector' do
+      subject.selector.should == Sidekiq::LimitFetch::Local::Selector
     end
   end
 

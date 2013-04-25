@@ -58,25 +58,6 @@ will be preserved.
   Sidekiq::Queue['name'].unpause # allows workers to use the queue
 ```
 
-### Multiple processes
-
-Limits are applied per process. In case you have several worker
-processes and want to have global locks between them, you'll need to
-enable global mode by setting global option, eg:
-
-```yaml
-  :global: true
-```
-
-or
-
-```ruby
-  Sidekiq.options[:global] = true
-```
-
-*Note:* if you want to change limits from a rails console you also need
-to use a global mode since it's a different from a worker process.
-
 ### Blocking queue mode
 
 If you use strict queue ordering (it will be used if you don't specify queue weights)

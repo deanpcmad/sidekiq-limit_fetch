@@ -16,7 +16,7 @@ module Sidekiq
     end
 
     def mode
-      Sidekiq.options[:global] ? LimitFetch::Global : LimitFetch::Local
+      Sidekiq.options[:local] ? LimitFetch::Local : LimitFetch::Global
     end
   end
 end

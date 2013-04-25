@@ -7,7 +7,7 @@ class Sidekiq::LimitFetch
       @queues = options[:queues]
       options[:strict] ? strict_order! : weighted_order!
 
-      set_selector options[:global]
+      set_selector options[:local]
       set_limits options[:limits]
       set_blocks options[:blocking]
     end
@@ -26,8 +26,8 @@ class Sidekiq::LimitFetch
 
     private
 
-    def set_selector(global)
-      @selector = global ? Global::Selector : Local::Selector
+    def set_selector(local)
+      @selector = local ? Local::Selector : Global::Selector
     end
 
     def set_limits(limits)
