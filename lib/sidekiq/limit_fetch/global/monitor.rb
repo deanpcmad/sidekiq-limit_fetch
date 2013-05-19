@@ -5,8 +5,8 @@ module Sidekiq::LimitFetch::Global
     HEARTBEAT_NAMESPACE = 'heartbeat:'
     PROCESSOR_NAMESPACE = 'processor:'
 
-    HEARTBEAT_TTL   = 90
-    REFRESH_TIMEOUT = 60
+    HEARTBEAT_TTL   = 18
+    REFRESH_TIMEOUT = 10
 
     def start!(ttl=HEARTBEAT_TTL, timeout=REFRESH_TIMEOUT)
       Thread.new do
@@ -22,9 +22,11 @@ module Sidekiq::LimitFetch::Global
 
     def update_heartbeat(ttl)
       Sidekiq.redis do |it|
-        it.set processor_key, true
-        it.set heartbeat_key, true
-        it.expire heartbeat_key, ttl
+        it.pipelined do
+          it.set processor_key, true
+          it.set heartbeat_key, true
+          it.expire heartbeat_key, ttl
+        end
       end
     end
 
