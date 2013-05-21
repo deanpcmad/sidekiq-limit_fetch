@@ -1,4 +1,5 @@
 require 'sidekiq'
+require 'celluloid'
 require 'sidekiq/fetch'
 
 class Sidekiq::LimitFetch
