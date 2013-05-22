@@ -6,97 +6,72 @@ describe Sidekiq::LimitFetch::Queues do
   let(:queues)   { %w[queue1 queue2] }
   let(:limits)   {{ 'queue1' => 3 }}
   let(:strict)   { true }
-  let(:local)    {}
   let(:blocking) {}
 
   let(:options) do
     { queues:   queues,
       limits:   limits,
       strict:   strict,
-      local:    local,
       blocking: blocking }
   end
 
-  after(:each ) do
-    Thread.current[:available_queues] = nil
+  it 'should acquire queues' do
+    subject.acquire
+    Sidekiq::Queue['queue1'].busy.should == 1
+    Sidekiq::Queue['queue2'].busy.should == 1
   end
 
-  shared_examples_for :selector do
-    it 'should acquire queues' do
-      subject.acquire
-      Sidekiq::Queue['queue1'].busy.should == 1
-      Sidekiq::Queue['queue2'].busy.should == 1
-    end
+  it 'should acquire dynamically blocking queues' do
+    subject.acquire
+    Sidekiq::Queue['queue1'].busy.should == 1
+    Sidekiq::Queue['queue2'].busy.should == 1
 
-    it 'should acquire dynamically blocking queues' do
-      subject.acquire
-      Sidekiq::Queue['queue1'].busy.should == 1
-      Sidekiq::Queue['queue2'].busy.should == 1
+    Sidekiq::Queue['queue1'].block
 
-      Sidekiq::Queue['queue1'].block
-
-      subject.acquire
-      Sidekiq::Queue['queue1'].busy.should == 2
-      Sidekiq::Queue['queue2'].busy.should == 1
-    end
-
-    it 'should block except given queues' do
-      Sidekiq::Queue['queue1'].block_except 'queue2'
-      subject.acquire
-      Sidekiq::Queue['queue1'].busy.should == 1
-      Sidekiq::Queue['queue2'].busy.should == 1
-
-      Sidekiq::Queue['queue1'].block_except 'queue404'
-      subject.acquire
-      Sidekiq::Queue['queue1'].busy.should == 2
-      Sidekiq::Queue['queue2'].busy.should == 1
-    end
-
-    it 'should release queues' do
-      subject.acquire
-      subject.release_except nil
-      Sidekiq::Queue['queue1'].busy.should == 0
-      Sidekiq::Queue['queue2'].busy.should == 0
-    end
-
-    it 'should release queues except selected' do
-      subject.acquire
-      subject.release_except 'queue:queue1'
-      Sidekiq::Queue['queue1'].busy.should == 1
-      Sidekiq::Queue['queue2'].busy.should == 0
-    end
-
-    it 'should release when no queues was acquired' do
-      queues.each {|name| Sidekiq::Queue[name].pause }
-      subject.acquire
-      -> { subject.release_except nil }.should_not raise_exception
-    end
-
-    context 'blocking' do
-      let(:blocking) { %w(queue1) }
-
-      it 'should acquire blocking queues' do
-        3.times { subject.acquire }
-        Sidekiq::Queue['queue1'].busy.should == 3
-        Sidekiq::Queue['queue2'].busy.should == 1
-      end
-    end
+    subject.acquire
+    Sidekiq::Queue['queue1'].busy.should == 2
+    Sidekiq::Queue['queue2'].busy.should == 1
   end
 
-  context 'without local flag' do
-    it_should_behave_like :selector
+  it 'should block except given queues' do
+    Sidekiq::Queue['queue1'].block_except 'queue2'
+    subject.acquire
+    Sidekiq::Queue['queue1'].busy.should == 1
+    Sidekiq::Queue['queue2'].busy.should == 1
 
-    it 'without local flag should be global' do
-      subject.selector.should == Sidekiq::LimitFetch::Global::Selector
-    end
+    Sidekiq::Queue['queue1'].block_except 'queue404'
+    subject.acquire
+    Sidekiq::Queue['queue1'].busy.should == 2
+    Sidekiq::Queue['queue2'].busy.should == 1
   end
 
-  context 'with local flag' do
-    let(:local) { true }
-    it_should_behave_like :selector
+  it 'should release queues' do
+    subject.acquire
+    subject.release_except nil
+    Sidekiq::Queue['queue1'].busy.should == 0
+    Sidekiq::Queue['queue2'].busy.should == 0
+  end
 
-    it 'should use local selector' do
-      subject.selector.should == Sidekiq::LimitFetch::Local::Selector
+  it 'should release queues except selected' do
+    subject.acquire
+    subject.release_except 'queue:queue1'
+    Sidekiq::Queue['queue1'].busy.should == 1
+    Sidekiq::Queue['queue2'].busy.should == 0
+  end
+
+  it 'should release when no queues was acquired' do
+    queues.each {|name| Sidekiq::Queue[name].pause }
+    subject.acquire
+    -> { subject.release_except nil }.should_not raise_exception
+  end
+
+  context 'blocking' do
+    let(:blocking) { %w(queue1) }
+
+    it 'should acquire blocking queues' do
+      3.times { subject.acquire }
+      Sidekiq::Queue['queue1'].busy.should == 3
+      Sidekiq::Queue['queue2'].busy.should == 1
     end
   end
 

@@ -4,9 +4,6 @@ require 'sidekiq/fetch'
 
 RSpec.configure do |config|
   config.before :each do
-    Sidekiq::Queue.instance_variable_set :@instances, {}
-    Sidekiq.options[:local] = defined?(local) ? local : nil
-
     Sidekiq.redis do |it|
       clean_redis = ->(queue) do
         it.del "limit_fetch:limit:#{queue}"

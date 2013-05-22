@@ -7,17 +7,6 @@ describe Sidekiq::LimitFetch::Global::Monitor do
   let(:name) { 'default' }
 
   before :each do
-    # namespaces = [
-    #   described_class::PROCESSOR_NAMESPACE,
-    #   described_class::HEARTBEAT_NAMESPACE
-    # ]
-
-    # Sidekiq.redis do |it|
-    #   namespaces.flat_map {|namespace|
-    #     it.keys(namespace + '*')
-    #   }.each {|key| it.del key }
-    # end
-
     monitor
   end
 
