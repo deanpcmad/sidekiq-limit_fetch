@@ -1,8 +1,9 @@
 require 'sidekiq'
-require 'sidekiq/fetch'
+require 'forwardable'
 
 class Sidekiq::LimitFetch
-  require_relative 'limit_fetch/unit_of_work'
+  autoload :UnitOfWork, 'sidekiq/limit_fetch/unit_of_work'
+
   require_relative 'limit_fetch/singleton'
   require_relative 'limit_fetch/queues'
   require_relative 'limit_fetch/local/semaphore'

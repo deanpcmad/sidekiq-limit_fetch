@@ -1,4 +1,6 @@
 require 'sidekiq/limit_fetch'
+require 'celluloid/autostart'
+require 'sidekiq/fetch'
 
 RSpec.configure do |config|
   config.before :each do
