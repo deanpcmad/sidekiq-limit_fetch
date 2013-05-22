@@ -20,14 +20,26 @@ describe Sidekiq::LimitFetch do
     work.queue_name.should == 'queue1'
     work.message.should == 'task1'
 
+    Sidekiq::Queue['queue1'].busy.should == 1
+    Sidekiq::Queue['queue2'].busy.should == 0
+
     subject.retrieve_work.should_not be
     work.requeue
+
+    Sidekiq::Queue['queue1'].busy.should == 0
+    Sidekiq::Queue['queue2'].busy.should == 0
 
     work = subject.retrieve_work
     work.message.should == 'task2'
 
+    Sidekiq::Queue['queue1'].busy.should == 1
+    Sidekiq::Queue['queue2'].busy.should == 0
+
     subject.retrieve_work.should_not be
     work.acknowledge
+
+    Sidekiq::Queue['queue1'].busy.should == 0
+    Sidekiq::Queue['queue2'].busy.should == 0
 
     work = subject.retrieve_work
     work.message.should == 'task1'

@@ -3,20 +3,17 @@ module Sidekiq
     extend LimitFetch::Singleton, Forwardable
 
     def_delegators :lock,
-      :limit,     :limit=,
-      :acquire,   :release,
-      :pause,     :unpause,
-      :block,     :unblock,
-      :paused?,   :blocking?,
-      :unblocked, :block_except,
-      :busy
+      :limit,         :limit=,
+      :acquire,       :release,
+      :pause,         :unpause,
+      :block,         :unblock,
+      :paused?,       :blocking?,
+      :unblocked,     :block_except,
+      :probed,        :busy,
+      :increase_busy, :decrease_busy
 
     def lock
-      @lock ||= mode::Semaphore.new name
-    end
-
-    def mode
-      Sidekiq.options[:local] ? LimitFetch::Local : LimitFetch::Global
+      @lock ||= LimitFetch::Global::Semaphore.new name
     end
   end
 end

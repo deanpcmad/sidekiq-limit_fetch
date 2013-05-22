@@ -60,7 +60,7 @@ module Sidekiq::LimitFetch::Global
 
         for _, queue in ipairs(queues) do
           if not blocking_mode or unblocked[queue] then
-            local busy_key    = namespace..'busy:'..queue
+            local probed_key  = namespace..'probed:'..queue
             local pause_key   = namespace..'pause:'..queue
             local paused      = redis.call('get', pause_key)
 
@@ -72,7 +72,7 @@ module Sidekiq::LimitFetch::Global
               local can_block = redis.call('get', block_key)
 
               if can_block or queue_limit then
-                queue_locks = redis.call('llen', busy_key)
+                queue_locks = redis.call('llen', probed_key)
               end
 
               blocking_mode = can_block and queue_locks > 0
@@ -84,7 +84,7 @@ module Sidekiq::LimitFetch::Global
               end
 
               if not queue_limit or queue_limit > queue_locks then
-                redis.call('rpush', busy_key, worker_name)
+                redis.call('rpush', probed_key, worker_name)
                 table.insert(available, queue)
               end
             end
@@ -102,8 +102,8 @@ module Sidekiq::LimitFetch::Global
         local queues      = ARGV
 
         for _, queue in ipairs(queues) do
-          local busy_key = namespace..'busy:'..queue
-          redis.call('lrem', busy_key, 1, worker_name)
+          local probed_key = namespace..'probed:'..queue
+          redis.call('lrem', probed_key, 1, worker_name)
         end
       LUA
     end

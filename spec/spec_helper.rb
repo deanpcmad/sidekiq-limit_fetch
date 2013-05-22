@@ -6,10 +6,13 @@ RSpec.configure do |config|
   config.before :each do
     Sidekiq.redis do |it|
       clean_redis = ->(queue) do
-        it.del "limit_fetch:limit:#{queue}"
-        it.del "limit_fetch:busy:#{queue}"
-        it.del "limit_fetch:pause:#{queue}"
-        it.del "limit_fetch:block:#{queue}"
+        it.pipelined do
+          it.del "limit_fetch:limit:#{queue}"
+          it.del "limit_fetch:busy:#{queue}"
+          it.del "limit_fetch:probed:#{queue}"
+          it.del "limit_fetch:pause:#{queue}"
+          it.del "limit_fetch:block:#{queue}"
+        end
       end
 
       clean_redis.call(name) if defined?(name)

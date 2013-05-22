@@ -59,14 +59,14 @@ describe Sidekiq::Queue do
       it 'should be countable' do
         queue.limit = 3
         5.times { queue.acquire }
-        queue.busy.should == 3
+        queue.probed.should == 3
       end
 
       it 'should be releasable' do
         queue.acquire
-        queue.busy.should == 1
+        queue.probed.should == 1
         queue.release
-        queue.busy.should == 0
+        queue.probed.should == 0
       end
 
       it 'should tell if paused' do

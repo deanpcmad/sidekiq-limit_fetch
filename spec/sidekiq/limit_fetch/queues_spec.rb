@@ -17,46 +17,46 @@ describe Sidekiq::LimitFetch::Queues do
 
   it 'should acquire queues' do
     subject.acquire
-    Sidekiq::Queue['queue1'].busy.should == 1
-    Sidekiq::Queue['queue2'].busy.should == 1
+    Sidekiq::Queue['queue1'].probed.should == 1
+    Sidekiq::Queue['queue2'].probed.should == 1
   end
 
   it 'should acquire dynamically blocking queues' do
     subject.acquire
-    Sidekiq::Queue['queue1'].busy.should == 1
-    Sidekiq::Queue['queue2'].busy.should == 1
+    Sidekiq::Queue['queue1'].probed.should == 1
+    Sidekiq::Queue['queue2'].probed.should == 1
 
     Sidekiq::Queue['queue1'].block
 
     subject.acquire
-    Sidekiq::Queue['queue1'].busy.should == 2
-    Sidekiq::Queue['queue2'].busy.should == 1
+    Sidekiq::Queue['queue1'].probed.should == 2
+    Sidekiq::Queue['queue2'].probed.should == 1
   end
 
   it 'should block except given queues' do
     Sidekiq::Queue['queue1'].block_except 'queue2'
     subject.acquire
-    Sidekiq::Queue['queue1'].busy.should == 1
-    Sidekiq::Queue['queue2'].busy.should == 1
+    Sidekiq::Queue['queue1'].probed.should == 1
+    Sidekiq::Queue['queue2'].probed.should == 1
 
     Sidekiq::Queue['queue1'].block_except 'queue404'
     subject.acquire
-    Sidekiq::Queue['queue1'].busy.should == 2
-    Sidekiq::Queue['queue2'].busy.should == 1
+    Sidekiq::Queue['queue1'].probed.should == 2
+    Sidekiq::Queue['queue2'].probed.should == 1
   end
 
   it 'should release queues' do
     subject.acquire
     subject.release_except nil
-    Sidekiq::Queue['queue1'].busy.should == 0
-    Sidekiq::Queue['queue2'].busy.should == 0
+    Sidekiq::Queue['queue1'].probed.should == 0
+    Sidekiq::Queue['queue2'].probed.should == 0
   end
 
   it 'should release queues except selected' do
     subject.acquire
     subject.release_except 'queue:queue1'
-    Sidekiq::Queue['queue1'].busy.should == 1
-    Sidekiq::Queue['queue2'].busy.should == 0
+    Sidekiq::Queue['queue1'].probed.should == 1
+    Sidekiq::Queue['queue2'].probed.should == 0
   end
 
   it 'should release when no queues was acquired' do
@@ -70,8 +70,8 @@ describe Sidekiq::LimitFetch::Queues do
 
     it 'should acquire blocking queues' do
       3.times { subject.acquire }
-      Sidekiq::Queue['queue1'].busy.should == 3
-      Sidekiq::Queue['queue2'].busy.should == 1
+      Sidekiq::Queue['queue1'].probed.should == 3
+      Sidekiq::Queue['queue2'].probed.should == 1
     end
   end
 

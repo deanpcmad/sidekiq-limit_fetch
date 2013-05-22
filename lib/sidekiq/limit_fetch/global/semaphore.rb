@@ -23,11 +23,23 @@ module Sidekiq::LimitFetch::Global
     end
 
     def release
-      Selector.release [@name]
+      redis {|it| it.lrem "#{PREFIX}:probed:#@name", 1, Selector.uuid }
     end
 
     def busy
       redis {|it| it.llen "#{PREFIX}:busy:#@name" }
+    end
+
+    def increase_busy
+      redis {|it| it.rpush "#{PREFIX}:busy:#@name", Selector.uuid }
+    end
+
+    def decrease_busy
+      redis {|it| it.lrem "#{PREFIX}:busy:#@name", 1, Selector.uuid }
+    end
+
+    def probed
+      redis {|it| it.llen "#{PREFIX}:probed:#@name" }
     end
 
     def pause

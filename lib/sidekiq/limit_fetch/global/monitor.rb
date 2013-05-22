@@ -37,8 +37,10 @@ module Sidekiq::LimitFetch::Global
           next if it.get heartbeat_key processor
 
           it.del processor_key processor
-          it.keys('limit_fetch:busy:*').each do |queue|
-            it.lrem queue, 0, processor
+          %w(limit_fetch:probed:* limit_fetch:busy:*).each do |pattern|
+            it.keys(pattern).each do |queue|
+              it.lrem queue, 0, processor
+            end
           end
         end
       end
