@@ -14,6 +14,10 @@ Add this line to your application's Gemfile:
 
     gem 'sidekiq-limit_fetch'
 
+### Requirements
+
+redis 2.6 or newer
+
 ## Usage
 
 ### Limits
