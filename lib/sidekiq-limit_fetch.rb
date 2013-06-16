@@ -1,1 +1,1 @@
-require 'sidekiq/limit_fetch'
+require_relative 'sidekiq/limit_fetch'

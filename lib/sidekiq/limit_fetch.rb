@@ -23,7 +23,10 @@ class Sidekiq::LimitFetch
   end
 
   def retrieve_work
-    queue, message = fetch_message
+    queue, message = nil
+    puts Benchmark.measure {|x|
+      queue, message = fetch_message
+    }
     UnitOfWork.new queue, message if message
   end
 
@@ -37,6 +40,7 @@ class Sidekiq::LimitFetch
 
   def redis_blpop(*args)
     return if args.size < 2
+    puts "queues: #{args.inspect}"
     Sidekiq.redis {|it| it.blpop *args }
   end
 end
