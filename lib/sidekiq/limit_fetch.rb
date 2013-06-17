@@ -4,6 +4,7 @@ require 'forwardable'
 class Sidekiq::LimitFetch
   autoload :UnitOfWork, 'sidekiq/limit_fetch/unit_of_work'
 
+  require_relative 'limit_fetch/redis'
   require_relative 'limit_fetch/singleton'
   require_relative 'limit_fetch/queues'
   require_relative 'limit_fetch/global/semaphore'
@@ -11,6 +12,7 @@ class Sidekiq::LimitFetch
   require_relative 'limit_fetch/global/monitor'
   require_relative 'extensions/queue'
 
+  include Redis
   Sidekiq.options[:fetch] = self
 
   def self.bulk_requeue(jobs)
@@ -37,6 +39,6 @@ class Sidekiq::LimitFetch
 
   def redis_blpop(*args)
     return if args.size < 2
-    Sidekiq.redis {|it| it.blpop *args }
+    redis {|it| it.blpop *args }
   end
 end
