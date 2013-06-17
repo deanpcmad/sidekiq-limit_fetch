@@ -8,7 +8,7 @@ limit       = ARGV.shift
 if limit
   limit = nil if limit == 'nil'
 
-  $:.unshift File.expand_path './lib'
+  $:.unshift File.expand_path '../lib'
   require 'sidekiq-limit_fetch'
   Sidekiq::Queue['inline'].limit = limit
   Sidekiq.redis {|it| it.del 'limit_fetch:probed:inline' }
