@@ -4,8 +4,8 @@ describe Sidekiq::LimitFetch do
   before :each do
     Sidekiq.redis do |it|
       it.del 'queue:queue1'
-      it.rpush 'queue:queue1', 'task1'
-      it.rpush 'queue:queue1', 'task2'
+      it.lpush 'queue:queue1', 'task1'
+      it.lpush 'queue:queue1', 'task2'
       it.expire 'queue:queue1', 30
     end
   end
@@ -30,7 +30,7 @@ describe Sidekiq::LimitFetch do
     Sidekiq::Queue['queue2'].busy.should == 0
 
     work = subject.retrieve_work
-    work.message.should == 'task2'
+    work.message.should == 'task1'
 
     Sidekiq::Queue['queue1'].busy.should == 1
     Sidekiq::Queue['queue2'].busy.should == 0
@@ -42,6 +42,6 @@ describe Sidekiq::LimitFetch do
     Sidekiq::Queue['queue2'].busy.should == 0
 
     work = subject.retrieve_work
-    work.message.should == 'task1'
+    work.message.should == 'task2'
   end
 end

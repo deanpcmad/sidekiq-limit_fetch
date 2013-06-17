@@ -32,13 +32,13 @@ class Sidekiq::LimitFetch
   private
 
   def fetch_message
-    queue, _ = redis_blpop *@queues.acquire, Sidekiq::Fetcher::TIMEOUT
+    queue, _ = redis_brpop *@queues.acquire, Sidekiq::Fetcher::TIMEOUT
   ensure
     @queues.release_except queue
   end
 
-  def redis_blpop(*args)
+  def redis_brpop(*args)
     return if args.size < 2
-    redis {|it| it.blpop *args }
+    redis {|it| it.brpop *args }
   end
 end
