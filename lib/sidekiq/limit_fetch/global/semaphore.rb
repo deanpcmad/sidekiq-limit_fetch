@@ -1,7 +1,6 @@
 module Sidekiq::LimitFetch::Global
   class Semaphore
-    extend Forwardable
-    def_delegator Sidekiq, :redis
+    include Sidekiq::LimitFetch::Redis
 
     PREFIX = 'limit_fetch'
 
@@ -19,7 +18,7 @@ module Sidekiq::LimitFetch::Global
     end
 
     def acquire
-      Selector.acquire([@name]).size > 0
+      Selector.acquire([@name], determine_namespace).size > 0
     end
 
     def release

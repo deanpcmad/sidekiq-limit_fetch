@@ -2,11 +2,11 @@ module Sidekiq::LimitFetch::Global
   module Selector
     extend self
 
-    def acquire(queues)
+    def acquire(queues, namespace)
       redis_eval :acquire, [namespace, uuid, queues]
     end
 
-    def release(queues)
+    def release(queues, namespace)
       redis_eval :release, [namespace, uuid, queues]
     end
 
@@ -21,13 +21,6 @@ module Sidekiq::LimitFetch::Global
     end
 
     private
-
-    def namespace
-      @namespace ||= begin
-        namespace = Sidekiq.options[:namespace]
-        namespace + ':' if namespace
-      end
-    end
 
     def redis_eval(script_name, args)
       Sidekiq.redis do |it|

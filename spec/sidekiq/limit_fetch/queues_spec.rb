@@ -12,7 +12,8 @@ describe Sidekiq::LimitFetch::Queues do
     { queues:   queues,
       limits:   limits,
       strict:   strict,
-      blocking: blocking }
+      blocking: blocking,
+      namespace: Sidekiq::LimitFetch::Redis.determine_namespace }
   end
 
   it 'should acquire queues' do

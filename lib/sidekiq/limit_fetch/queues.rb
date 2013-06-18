@@ -3,7 +3,9 @@ class Sidekiq::LimitFetch
     THREAD_KEY = :acquired_queues
 
     def initialize(options)
-      @queues = options[:queues]
+      @queues    = options[:queues]
+      @namespace = options[:namespace]
+
       options[:strict] ? strict_order! : weighted_order!
 
       set_limits options[:limits]
@@ -11,7 +13,7 @@ class Sidekiq::LimitFetch
     end
 
     def acquire
-      selector.acquire(ordered_queues)
+      selector.acquire(ordered_queues, @namespace)
         .tap {|it| save it }
         .map {|it| "queue:#{it}" }
     end
@@ -19,7 +21,7 @@ class Sidekiq::LimitFetch
     def release_except(full_name)
       queues = restore
       queues.delete full_name[/queue:(.*)/, 1] if full_name
-      selector.release queues
+      selector.release queues, @namespace
     end
 
     private

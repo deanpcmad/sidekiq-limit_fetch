@@ -21,7 +21,7 @@ class Sidekiq::LimitFetch
 
   def initialize(options)
     Global::Monitor.start!
-    @queues = Queues.new options
+    @queues = Queues.new options.merge(namespace: determine_namespace)
   end
 
   def retrieve_work
@@ -39,6 +39,6 @@ class Sidekiq::LimitFetch
 
   def redis_brpop(*args)
     return if args.size < 2
-    redis {|it| it.brpop *args }
+    nonblocking_redis {|it| it.brpop *args }
   end
 end
