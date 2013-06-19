@@ -18,6 +18,12 @@ Add this line to your application's Gemfile:
 
 redis 2.6 or newer
 
+```
+heroku uses redis 2.4 by default
+to update version you need to contact their support:
+https://devcenter.heroku.com/articles/redistogo#redis-26
+```
+
 ## Usage
 
 ### Limits
