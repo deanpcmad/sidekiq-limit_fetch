@@ -8,4 +8,8 @@ module Sidekiq::LimitFetch::Singleton
   end
 
   alias [] new
+
+  def instances
+    @instances.values
+  end
 end

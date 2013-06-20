@@ -15,8 +15,8 @@ class Sidekiq::LimitFetch
   include Redis
   Sidekiq.options[:fetch] = self
 
-  def self.bulk_requeue(jobs)
-    Sidekiq::BasicFetch.bulk_requeue jobs
+  def self.bulk_requeue(*args)
+    Sidekiq::BasicFetch.bulk_requeue *args
   end
 
   def initialize(options)
@@ -39,6 +39,16 @@ class Sidekiq::LimitFetch
 
   def redis_brpop(*args)
     return if args.size < 2
-    nonblocking_redis {|it| it.brpop *args }
+    query = -> redis { redis.brpop *args }
+
+    if busy_local_queues.any? {|queue| not args.include? queue.rname }
+      nonblocking_redis(&query)
+    else
+      redis(&query)
+    end
+  end
+
+  def busy_local_queues
+    Sidekiq::Queue.instances.select(&:local_busy?)
   end
 end

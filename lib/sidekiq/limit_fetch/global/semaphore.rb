@@ -4,8 +4,12 @@ module Sidekiq::LimitFetch::Global
 
     PREFIX = 'limit_fetch'
 
+    attr_reader :local_busy
+
     def initialize(name)
       @name = name
+      @lock = Mutex.new
+      @local_busy = 0
     end
 
     def limit
@@ -30,10 +34,12 @@ module Sidekiq::LimitFetch::Global
     end
 
     def increase_busy
+      increase_local_busy
       redis {|it| it.rpush "#{PREFIX}:busy:#@name", Selector.uuid }
     end
 
     def decrease_busy
+      decrease_local_busy
       redis {|it| it.lrem "#{PREFIX}:busy:#@name", 1, Selector.uuid }
     end
 
@@ -68,6 +74,18 @@ module Sidekiq::LimitFetch::Global
 
     def blocking?
       redis {|it| it.get "#{PREFIX}:block:#@name" }
+    end
+
+    def increase_local_busy
+      @lock.synchronize { @local_busy += 1 }
+    end
+
+    def decrease_local_busy
+      @lock.synchronize { @local_busy -= 1 }
+    end
+
+    def local_busy?
+      @local_busy > 0
     end
   end
 end
