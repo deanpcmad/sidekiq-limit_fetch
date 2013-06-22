@@ -53,12 +53,14 @@ distribution among queues any time you want.
 
 If you use multiple sidekiq processes then you can specify limits per process:
 
-```
+```yaml
   :process_limits:
     queue_name: 2
 ```
 
-Or set it in your code: ```ruby
+Or set it in your code:
+
+```ruby
   Sidekiq::Queue['queue_name'].process_limit = 2
 ```
 
