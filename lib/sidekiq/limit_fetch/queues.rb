@@ -8,7 +8,8 @@ class Sidekiq::LimitFetch
 
       options[:strict] ? strict_order! : weighted_order!
 
-      set_limits options[:limits]
+      set :limit, options[:limits]
+      set :process_limit, options[:process_limits]
       set_blocks options[:blocking]
     end
 
@@ -30,10 +31,10 @@ class Sidekiq::LimitFetch
       Global::Selector
     end
 
-    def set_limits(limits)
+    def set(limit_type, limits)
       return unless limits
       limits.each do |name, limit|
-        Sidekiq::Queue[name].limit = limit
+        Sidekiq::Queue[name].send "#{limit_type}=", limit
       end
     end
 
