@@ -21,6 +21,15 @@ module Sidekiq::LimitFetch::Global
       redis {|it| it.set "#{PREFIX}:limit:#@name", value }
     end
 
+    def process_limit
+      value = redis {|it| it.get "#{PREFIX}:process_limit:#@name" }
+      value.to_i if value
+    end
+
+    def process_limit=(value)
+      redis {|it| it.set "#{PREFIX}:process_limit:#@name", value }
+    end
+
     def acquire
       Selector.acquire([@name], determine_namespace).size > 0
     end

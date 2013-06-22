@@ -24,6 +24,12 @@ describe 'semaphore' do
     subject.probed.should == 4
   end
 
+  it 'should acquire tasks with regard to process limit' do
+    subject.process_limit = 4
+    6.times { subject.acquire }
+    subject.probed.should == 4
+  end
+
   it 'should release active tasks' do
     6.times { subject.acquire }
     3.times { subject.release }

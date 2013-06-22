@@ -49,6 +49,19 @@ workers simultaneously.
 Ability to set limits dynamically allows you to resize worker
 distribution among queues any time you want.
 
+### Limits per process
+
+If you use multiple sidekiq processes then you can specify limits per process:
+
+```
+  :process_limits:
+    queue_name: 2
+```
+
+Or set it in your code: ```ruby
+  Sidekiq::Queue['queue_name'].process_limit = 2
+```
+
 ### Busy workers by queue
 
 You can see how many workers currently handling a queue:

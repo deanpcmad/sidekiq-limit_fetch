@@ -11,6 +11,7 @@ RSpec.configure do |config|
       clean_redis = ->(queue) do
         it.pipelined do
           it.del "limit_fetch:limit:#{queue}"
+          it.del "limit_fetch:process_limit:#{queue}"
           it.del "limit_fetch:busy:#{queue}"
           it.del "limit_fetch:probed:#{queue}"
           it.del "limit_fetch:pause:#{queue}"
