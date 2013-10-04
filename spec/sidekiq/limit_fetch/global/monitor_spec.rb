@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+Thread.abort_on_exception = true
+
 describe Sidekiq::LimitFetch::Global::Monitor do
   let(:monitor) { described_class.start! ttl, timeout }
   let(:ttl) { 1 }
@@ -23,6 +25,16 @@ describe Sidekiq::LimitFetch::Global::Monitor do
       queue.probed.should == 2
 
       described_class.stub :update_heartbeat
+      sleep 2*ttl
+      queue.probed.should == 0
+    end
+
+    it 'should remove invalid locks' do
+      2.times { queue.acquire }
+      described_class.stub :update_heartbeat
+      Sidekiq.redis do |it|
+        it.del Sidekiq::LimitFetch::Global::Monitor::PROCESS_SET
+      end
       sleep 2*ttl
       queue.probed.should == 0
     end

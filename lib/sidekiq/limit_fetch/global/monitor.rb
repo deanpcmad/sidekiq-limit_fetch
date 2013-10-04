@@ -31,16 +31,21 @@ module Sidekiq::LimitFetch::Global
 
     def invalidate_old_processes
       Sidekiq.redis do |it|
-        it.smembers(PROCESS_SET).each do |process|
-          next if it.get heartbeat_key process
+        processes = it.smembers PROCESS_SET
+        processes.each do |process|
+          unless it.get heartbeat_key process
+            processes.delete process
+            it.srem PROCESS_SET, process
+          end
+        end
 
-          Sidekiq::Queue.instances.map(&:name).uniq.each do |queue|
+        Sidekiq::Queue.instances.map(&:name).uniq.each do |queue|
+          locks = it.lrange "limit_fetch:probed:#{queue}", 0, -1
+          (locks.uniq - processes).each do |dead_process|
             %w(limit_fetch:probed: limit_fetch:busy:).each do |prefix|
-              it.lrem prefix + queue, 0, process
+              it.lrem prefix + queue, 0, dead_process
             end
           end
-
-          it.srem PROCESS_SET, process
         end
       end
     end
