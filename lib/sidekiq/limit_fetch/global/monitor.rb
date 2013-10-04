@@ -2,10 +2,9 @@ module Sidekiq::LimitFetch::Global
   module Monitor
     extend self
 
-    HEARTBEAT_NAMESPACE = 'heartbeat:'
-    PROCESSOR_NAMESPACE = 'processor:'
-
-    HEARTBEAT_TTL   = 18
+    HEARTBEAT_PREFIX = 'heartbeat:'
+    PROCESS_SET = 'processes'
+    HEARTBEAT_TTL = 18
     REFRESH_TIMEOUT = 10
 
     def start!(ttl=HEARTBEAT_TTL, timeout=REFRESH_TIMEOUT)
@@ -23,7 +22,7 @@ module Sidekiq::LimitFetch::Global
     def update_heartbeat(ttl)
       Sidekiq.redis do |it|
         it.pipelined do
-          it.set processor_key, true
+          it.sadd PROCESS_SET, Selector.uuid
           it.set heartbeat_key, true
           it.expire heartbeat_key, ttl
         end
@@ -32,26 +31,22 @@ module Sidekiq::LimitFetch::Global
 
     def invalidate_old_processors
       Sidekiq.redis do |it|
-        it.keys(PROCESSOR_NAMESPACE + '*').each do |processor|
-          processor.sub! PROCESSOR_NAMESPACE, ''
+        it.smembers(PROCESS_SET).each do |processor|
           next if it.get heartbeat_key processor
 
-          it.del processor_key processor
           %w(limit_fetch:probed:* limit_fetch:busy:*).each do |pattern|
             it.keys(pattern).each do |queue|
               it.lrem queue, 0, processor
             end
           end
+
+          it.srem processor
         end
       end
     end
 
     def heartbeat_key(processor=Selector.uuid)
-      HEARTBEAT_NAMESPACE + processor
-    end
-
-    def processor_key(processor=Selector.uuid)
-      PROCESSOR_NAMESPACE + processor
+      HEARTBEAT_PREFIX + processor
     end
   end
 end
