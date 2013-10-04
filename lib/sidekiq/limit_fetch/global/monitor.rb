@@ -11,7 +11,7 @@ module Sidekiq::LimitFetch::Global
       Thread.new do
         loop do
           update_heartbeat ttl
-          invalidate_old_processors
+          invalidate_old_processes
           sleep timeout
         end
       end
@@ -29,24 +29,24 @@ module Sidekiq::LimitFetch::Global
       end
     end
 
-    def invalidate_old_processors
+    def invalidate_old_processes
       Sidekiq.redis do |it|
-        it.smembers(PROCESS_SET).each do |processor|
-          next if it.get heartbeat_key processor
+        it.smembers(PROCESS_SET).each do |process|
+          next if it.get heartbeat_key process
 
           %w(limit_fetch:probed:* limit_fetch:busy:*).each do |pattern|
             it.keys(pattern).each do |queue|
-              it.lrem queue, 0, processor
+              it.lrem queue, 0, process
             end
           end
 
-          it.srem processor
+          it.srem PROCESS_SET, process
         end
       end
     end
 
-    def heartbeat_key(processor=Selector.uuid)
-      HEARTBEAT_PREFIX + processor
+    def heartbeat_key(process=Selector.uuid)
+      HEARTBEAT_PREFIX + process
     end
   end
 end
