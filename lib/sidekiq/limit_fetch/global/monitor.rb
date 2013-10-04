@@ -34,9 +34,9 @@ module Sidekiq::LimitFetch::Global
         it.smembers(PROCESS_SET).each do |process|
           next if it.get heartbeat_key process
 
-          %w(limit_fetch:probed:* limit_fetch:busy:*).each do |pattern|
-            it.keys(pattern).each do |queue|
-              it.lrem queue, 0, process
+          Sidekiq::Queue.instances.map(&:name).uniq.each do |queue|
+            %w(limit_fetch:probed: limit_fetch:busy:).each do |prefix|
+              it.lrem prefix + queue, 0, process
             end
           end
 
