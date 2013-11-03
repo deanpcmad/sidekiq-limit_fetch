@@ -24,6 +24,8 @@ to update version you need to contact their support:
 https://devcenter.heroku.com/articles/redistogo#redis-26
 ```
 
+**Important note:** At this moment, `sidekiq-limit_fetch` is incompatible with Sidekiq Pro's `reliable_fetch`.
+
 ## Usage
 
 ### Limits
