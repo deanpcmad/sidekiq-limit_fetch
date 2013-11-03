@@ -1,6 +1,7 @@
 Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-limit_fetch'
   gem.version       = '2.1.2'
+  gem.license       = 'MIT'
   gem.authors       = 'brainopia'
   gem.email         = 'brainopia@evilmartians.com'
   gem.summary       = 'Sidekiq strategy to support queue limits'
