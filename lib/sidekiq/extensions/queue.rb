@@ -13,7 +13,8 @@ module Sidekiq
       :unblocked,     :block_except,
       :probed,        :busy,
       :increase_busy, :decrease_busy,
-      :local_busy?
+      :local_busy?,   :explain,
+      :remove_locks_except!
 
     def lock
       @lock ||= LimitFetch::Global::Semaphore.new name

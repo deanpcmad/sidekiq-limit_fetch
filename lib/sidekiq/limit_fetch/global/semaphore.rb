@@ -42,6 +42,10 @@ module Sidekiq::LimitFetch::Global
       redis {|it| it.llen "#{PREFIX}:busy:#@name" }
     end
 
+    def busy_processes
+      redis {|it| it.lrange "#{PREFIX}:busy:#@name", 0, -1 }
+    end
+
     def increase_busy
       increase_local_busy
       redis {|it| it.rpush "#{PREFIX}:busy:#@name", Selector.uuid }
@@ -54,6 +58,10 @@ module Sidekiq::LimitFetch::Global
 
     def probed
       redis {|it| it.llen "#{PREFIX}:probed:#@name" }
+    end
+
+    def probed_processes
+      redis {|it| it.lrange "#{PREFIX}:probed:#@name", 0, -1 }
     end
 
     def pause
@@ -95,6 +103,38 @@ module Sidekiq::LimitFetch::Global
 
     def local_busy?
       @local_busy > 0
+    end
+
+    def explain
+      <<-END.gsub(/^ {8}/, '')
+        Current sidekiq process: #{Selector.uuid}
+
+          All processes:
+        #{Monitor.all_processes.join "\n"}
+
+          Stale processes:
+        #{Monitor.old_processes.join "\n"}
+
+          Locked queue processes:
+        #{probed_processes.sort.join "\n"}
+
+          Busy queue processes:
+        #{busy_processes.sort.join "\n"}
+      END
+    end
+
+    def remove_locks_except!(processes)
+      locked_processes = probed_processes.uniq
+      (locked_processes - processes).each do |dead_process|
+        remove_lock! dead_process
+      end
+    end
+
+    def remove_lock!(process)
+      redis do |it|
+        it.lrem "#{PREFIX}:probed:#@name", 0, process
+        it.lrem "#{PREFIX}:busy:#@name", 0, process
+      end
     end
   end
 end

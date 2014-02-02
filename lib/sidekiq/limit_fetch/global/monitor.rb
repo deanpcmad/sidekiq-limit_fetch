@@ -1,5 +1,6 @@
 module Sidekiq::LimitFetch::Global
   module Monitor
+    include Sidekiq::LimitFetch::Redis
     extend self
 
     HEARTBEAT_PREFIX = 'heartbeat:'
@@ -17,6 +18,22 @@ module Sidekiq::LimitFetch::Global
       end
     end
 
+    def all_processes
+      redis {|it| it.smembers PROCESS_SET }
+    end
+
+    def old_processes
+      all_processes.reject do |process|
+        redis {|it| it.get heartbeat_key process }
+      end
+    end
+
+    def remove_old_processes!
+      redis do |it|
+        old_processes.each {|process| it.srem PROCESS_SET, process }
+      end
+    end
+
     private
 
     def update_heartbeat(ttl)
@@ -31,21 +48,11 @@ module Sidekiq::LimitFetch::Global
 
     def invalidate_old_processes
       Sidekiq.redis do |it|
-        processes = it.smembers PROCESS_SET
-        processes.each do |process|
-          unless it.get heartbeat_key process
-            processes.delete process
-            it.srem PROCESS_SET, process
-          end
-        end
+        remove_old_processes!
+        processes = all_processes
 
-        Sidekiq::Queue.instances.map(&:name).uniq.each do |queue|
-          locks = it.lrange "limit_fetch:probed:#{queue}", 0, -1
-          (locks.uniq - processes).each do |dead_process|
-            %w(limit_fetch:probed: limit_fetch:busy:).each do |prefix|
-              it.lrem prefix + queue, 0, dead_process
-            end
-          end
+        Sidekiq::Queue.instances.each do |queue|
+          queue.remove_locks_except! processes
         end
       end
     end
