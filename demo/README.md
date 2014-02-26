@@ -3,8 +3,8 @@ This is a demo rails app with a configured sidekiq-limit_fetch.
 Its purpose is to check whether plugin works in certain situations.
 
 Application is preconfigured with two workers:
-- app/workers/fast_worker.rb which does `sleep 0.2`
-- app/workers/slow_worker.rb which does `sleep 1`
+- `app/workers/fast_worker.rb` which does `sleep 0.2`
+- `app/workers/slow_worker.rb` which does `sleep 1`
 
 There is also a rake task which can be invoked as `bundle exec rake demo:limit`:
 
