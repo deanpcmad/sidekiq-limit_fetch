@@ -26,6 +26,8 @@ https://devcenter.heroku.com/articles/redistogo#redis-2-6
 
 **Important note:** At this moment, `sidekiq-limit_fetch` is incompatible with Sidekiq Pro's `reliable_fetch`.
 
+https://github.com/mperham/sidekiq/issues/1508 — a sidekiq admin busy page is unreliable, so if you need to check how many workers are running a queue use a `#busy` method described below.
+
 ## Usage
 
 ### Limits
