@@ -18,7 +18,11 @@ module Sidekiq::LimitFetch::Global
     end
 
     def limit=(value)
-      redis {|it| it.set "#{PREFIX}:limit:#@name", value }
+      if value
+        redis {|it| it.set "#{PREFIX}:limit:#@name", value }
+      else
+        redis {|it| it.del "#{PREFIX}:limit:#@name" }
+      end
     end
 
     def process_limit
@@ -27,7 +31,11 @@ module Sidekiq::LimitFetch::Global
     end
 
     def process_limit=(value)
-      redis {|it| it.set "#{PREFIX}:process_limit:#@name", value }
+      if value
+        redis {|it| it.set "#{PREFIX}:process_limit:#@name", value }
+      else
+        redis {|it| it.del "#{PREFIX}:process_limit:#@name" }
+      end
     end
 
     def acquire
