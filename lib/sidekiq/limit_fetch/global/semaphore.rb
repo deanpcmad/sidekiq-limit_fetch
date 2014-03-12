@@ -128,6 +128,15 @@ module Sidekiq::LimitFetch::Global
 
           Busy queue processes:
         #{busy_processes.sort.join "\n"}
+
+          Limit:
+        #{limit.inspect}
+
+          Process limit:
+        #{process_limit.inspect}
+
+          Blocking:
+        #{blocking?}
       END
     end
 
