@@ -82,7 +82,9 @@ module Sidekiq::LimitFetch::Global
                 end
               end
 
-              blocking_mode = can_block and locks > 0
+              if not blocking_mode then
+                blocking_mode = can_block and locks > 0
+              end
 
               if blocking_mode and can_block ~= 'true' then
                 for unblocked_queue in string.gmatch(can_block, "[^,]+") do
