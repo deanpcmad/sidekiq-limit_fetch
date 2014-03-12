@@ -22,6 +22,45 @@ namespace :demo do
     YAML
   end
 
+  task blocking: :environment do
+    puts '=> Creating sidekiq tasks'
+
+    AWorker.perform_async
+    BWorker.perform_async
+    CWorker.perform_async
+
+    run_sidekiq_monitoring
+    run_sidekiq_workers config: <<-YAML
+      :verbose: false
+      :concurrency: 4
+      :queues:
+        - a
+        - b
+        - c
+      :blocking:
+        - a
+    YAML
+  end
+
+  task advanced_blocking: :environment do
+    puts '=> Creating sidekiq tasks'
+
+    AWorker.perform_async
+    BWorker.perform_async
+    CWorker.perform_async
+
+    run_sidekiq_monitoring
+    run_sidekiq_workers config: <<-YAML
+      :verbose: false
+      :concurrency: 4
+      :queues:
+        - a
+        - b
+        - c
+      :blocking:
+        - [a, b]
+    YAML
+  end
   def with_sidekiq_config(config)
     whitespace_offset = config[/\A */].size
     config.gsub! /^ {#{whitespace_offset}}/, ''
@@ -51,8 +90,7 @@ namespace :demo do
     end
 
     with_sidekiq_config options[:config] do
-      config = cli.send :parse_config, 'config/sidekiq.yml'
-      Sidekiq.options.merge! config
+      cli.send :setup_options, []
     end
 
     cli.run
