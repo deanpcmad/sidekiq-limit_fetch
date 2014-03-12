@@ -32,13 +32,16 @@ class Sidekiq::LimitFetch
     end
 
     def set(limit_type, limits)
-      return unless limits
-      limits.each do |name, limit|
-        Sidekiq::Queue[name].send "#{limit_type}=", limit
+      limits ||= {}
+      each_queue do |queue|
+        limit = limits[queue.name.to_s] || limits[queue.name.to_sym]
+        queue.send "#{limit_type}=", limit
       end
     end
 
     def set_blocks(blocks)
+      each_queue(&:unblock)
+
       blocks.to_a.each do |it|
         if it.is_a? Array
           it.each {|name| Sidekiq::Queue[name].block_except it }
@@ -65,6 +68,10 @@ class Sidekiq::LimitFetch
       Thread.current[THREAD_KEY] || []
     ensure
       Thread.current[THREAD_KEY] = nil
+    end
+    
+    def each_queue
+      @queues.uniq.each {|it| yield Sidekiq::Queue[it] }
     end
   end
 end
