@@ -1,4 +1,6 @@
 require 'sidekiq'
+require 'sidekiq/util'
+require 'sidekiq/api'
 require 'forwardable'
 
 class Sidekiq::LimitFetch

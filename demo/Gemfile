@@ -4,5 +4,6 @@ gem 'rails'
 gem 'sinatra'
 gem 'celluloid'
 gem 'launchy'
-gem 'sidekiq-limit_fetch'
+gem 'sidekiq', github: 'mperham/sidekiq'
+gem 'sidekiq-limit_fetch', path: '..'
 
