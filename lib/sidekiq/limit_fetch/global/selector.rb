@@ -54,19 +54,23 @@ module Sidekiq::LimitFetch::Global
 
         for _, queue in ipairs(queues) do
           if not blocking_mode or unblocked[queue] then
-            local probed_key  = namespace..'probed:'..queue
-            local pause_key   = namespace..'pause:'..queue
-            local paused      = redis.call('get', pause_key)
+            local probed_key        = namespace..'probed:'..queue
+            local pause_key         = namespace..'pause:'..queue
+            local limit_key         = namespace..'limit:'..queue
+            local process_limit_key = namespace..'process_limit:'..queue
+            local block_key         = namespace..'block:'..queue
+
+            local paused, limit, process_limit, can_block =
+              unpack(redis.call('mget',
+                pause_key,
+                limit_key,
+                process_limit_key,
+                block_key
+              ))
 
             if not paused then
-              local limit_key = namespace..'limit:'..queue
-              local limit = tonumber(redis.call('get', limit_key))
-
-              local process_limit_key = namespace..'process_limit:'..queue
-              local process_limit = tonumber(redis.call('get', process_limit_key))
-
-              local block_key = namespace..'block:'..queue
-              local can_block = redis.call('get', block_key)
+              limit = tonumber(limit)
+              process_limit = tonumber(process_limit)
 
               if can_block or limit then
                 locks = redis.call('llen', probed_key)
