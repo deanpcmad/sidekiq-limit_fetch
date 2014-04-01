@@ -117,12 +117,6 @@ module Sidekiq::LimitFetch::Global
       <<-END.gsub(/^ {8}/, '')
         Current sidekiq process: #{Selector.uuid}
 
-          All processes:
-        #{Monitor.all_processes.join "\n"}
-
-          Stale processes:
-        #{Monitor.old_processes.join "\n"}
-
           Locked queue processes:
         #{probed_processes.sort.join "\n"}
 

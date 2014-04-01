@@ -11,7 +11,6 @@ class Sidekiq::LimitFetch
   require_relative 'limit_fetch/queues'
   require_relative 'limit_fetch/global/semaphore'
   require_relative 'limit_fetch/global/selector'
-  require_relative 'limit_fetch/global/monitor'
   require_relative 'extensions/queue'
 
   include Redis
@@ -22,7 +21,6 @@ class Sidekiq::LimitFetch
   end
 
   def initialize(options)
-    Global::Monitor.start!
     @queues = Queues.new options.merge(namespace: determine_namespace)
   end
 
