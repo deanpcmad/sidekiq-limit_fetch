@@ -3,8 +3,8 @@ module Sidekiq::LimitFetch::Global
     include Sidekiq::LimitFetch::Redis
     extend self
 
-    HEARTBEAT_PREFIX = 'heartbeat:'
-    PROCESS_SET = 'processes'
+    HEARTBEAT_PREFIX = 'limit:heartbeat:'
+    PROCESS_SET = 'limit:processes'
     HEARTBEAT_TTL = 18
     REFRESH_TIMEOUT = 10
 
