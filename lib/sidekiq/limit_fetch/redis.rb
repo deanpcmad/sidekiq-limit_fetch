@@ -4,6 +4,9 @@ module Sidekiq::LimitFetch::Redis
   # prevent blocking of fetcher
   # more bullet-proof and faster (O_O)
   # than using Celluloid::IO
+  #
+  # https://github.com/brainopia/sidekiq-limit_fetch/issues/41
+  # explanation of why Future#value is beneficial here
   def nonblocking_redis
     redis do |redis|
       begin
