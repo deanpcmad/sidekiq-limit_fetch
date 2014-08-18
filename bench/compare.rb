@@ -1,5 +1,6 @@
 require 'benchmark'
 require 'sidekiq/cli'
+require 'sidekiq/api'
 
 total       = (ARGV.shift || 50).to_i
 concurrency = ARGV.shift || 1
@@ -12,6 +13,7 @@ if limit
   require 'sidekiq-limit_fetch'
   Sidekiq::Queue['inline'].limit = limit
   Sidekiq.redis {|it| it.del 'limit_fetch:probed:inline' }
+  Sidekiq::LimitFetch::Queues.send(:define_method, :set) {|*| }
 end
 
 Sidekiq::Queue.new('inline').clear
@@ -40,6 +42,7 @@ FinishJob.perform_async
 Sidekiq::CLI.instance.tap do |cli|
   %w(validate! boot_system).each {|stub| cli.define_singleton_method(stub) {}}
   cli.parse ['-q inline', '-q other', "-c #{concurrency}"]
+
   puts Benchmark.measure {
     begin
       cli.run
