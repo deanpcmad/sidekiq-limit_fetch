@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-limit_fetch'
-  gem.version       = '2.2.5'
+  gem.version       = '2.2.6'
   gem.license       = 'MIT'
   gem.authors       = 'brainopia'
   gem.email         = 'brainopia@evilmartians.com'
@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep %r{^spec/}
   gem.require_paths = %w(lib)
 
-  gem.add_dependency 'sidekiq', '>= 2.6.5', '< 3.3'
+  gem.add_dependency 'sidekiq', '>= 2.6.5', '< 4.0'
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'rake'
 end
