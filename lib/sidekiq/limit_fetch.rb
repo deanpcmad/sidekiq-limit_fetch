@@ -23,6 +23,11 @@ class Sidekiq::LimitFetch
 
   def initialize(options)
     Global::Monitor.start!
+
+    # Add Dynamic queues
+    queues = Sidekiq.redis { |conn| conn.smembers('queues') }
+    options[:queues] = options[:queues].concat(queues)
+
     @queues = Queues.new options.merge(namespace: determine_namespace)
   end
 
