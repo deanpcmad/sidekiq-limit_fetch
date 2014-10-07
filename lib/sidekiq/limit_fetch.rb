@@ -23,10 +23,20 @@ class Sidekiq::LimitFetch
 
   def initialize(options)
     Global::Monitor.start!
+
+    # Add Dynamic queues
+    queues = Sidekiq::Queue.all.map{ |queue| queue.name }
+    options[:queues] = options[:queues].concat(queues)
     @queues = Queues.new options.merge(namespace: determine_namespace)
   end
 
+  def dynamic_queues
+    queues = Sidekiq::Queue.all.map{ |queue| queue.name }
+    @queues.add_queues(queues)
+  end
+
   def retrieve_work
+    dynamic_queues
     queue, message = fetch_message
     UnitOfWork.new queue, message if message
   end

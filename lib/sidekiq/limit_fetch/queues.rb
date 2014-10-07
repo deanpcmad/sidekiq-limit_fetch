@@ -13,6 +13,10 @@ class Sidekiq::LimitFetch
       set_blocks options[:blocking]
     end
 
+    def add_queues(queues)
+      @queues.concat(queues).uniq!
+    end
+
     def acquire
       selector.acquire(ordered_queues, @namespace)
         .tap {|it| save it }
@@ -69,7 +73,7 @@ class Sidekiq::LimitFetch
     ensure
       Thread.current[THREAD_KEY] = nil
     end
-    
+
     def each_queue
       @queues.uniq.each {|it| yield Sidekiq::Queue[it] }
     end
