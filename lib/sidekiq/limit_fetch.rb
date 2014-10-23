@@ -9,6 +9,7 @@ class Sidekiq::LimitFetch
   require_relative 'limit_fetch/redis'
   require_relative 'limit_fetch/singleton'
   require_relative 'limit_fetch/queues'
+  require_relative 'limit_fetch/utils'
   require_relative 'limit_fetch/global/semaphore'
   require_relative 'limit_fetch/global/selector'
   require_relative 'limit_fetch/global/monitor'
@@ -24,19 +25,19 @@ class Sidekiq::LimitFetch
   def initialize(options)
     Global::Monitor.start!
 
-    # Add Dynamic queues
     queues = Sidekiq::Queue.all.map{ |queue| queue.name }
     options[:queues] = options[:queues].concat(queues)
     @queues = Queues.new options.merge(namespace: determine_namespace)
   end
 
   def dynamic_queues
+    Sidekiq::LimitFetch::Utils::Refresh.done!
     queues = Sidekiq::Queue.all.map{ |queue| queue.name }
     @queues.add_queues(queues)
   end
 
   def retrieve_work
-    dynamic_queues
+    dynamic_queues if Sidekiq::LimitFetch::Utils::Refresh.do?
     queue, message = fetch_message
     UnitOfWork.new queue, message if message
   end
