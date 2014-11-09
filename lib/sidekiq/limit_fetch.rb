@@ -25,14 +25,14 @@ class Sidekiq::LimitFetch
   def initialize(options)
     Global::Monitor.start!
 
-    queues = Sidekiq::Queue.all.map{ |queue| queue.name }
+    queues = Sidekiq::Queue.all.map { |queue| queue.name }
     options[:queues] = options[:queues].concat(queues)
     @queues = Queues.new options.merge(namespace: determine_namespace)
   end
 
   def dynamic_queues
     Sidekiq::LimitFetch::Utils::Refresh.done!
-    queues = Sidekiq::Queue.all.map{ |queue| queue.name }
+    queues = Sidekiq::Queue.all.map { |queue| queue.name }
     @queues.add_queues(queues)
   end
 
