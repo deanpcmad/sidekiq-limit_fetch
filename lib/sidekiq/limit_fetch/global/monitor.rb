@@ -8,9 +8,10 @@ module Sidekiq::LimitFetch::Global
     HEARTBEAT_TTL = 20
     REFRESH_TIMEOUT = 5
 
-    def start!(ttl=HEARTBEAT_TTL, timeout=REFRESH_TIMEOUT)
+    def start!(queues, ttl=HEARTBEAT_TTL, timeout=REFRESH_TIMEOUT)
       Thread.new do
         loop do
+          add_dynamic queues if queues.dynamic?
           update_heartbeat ttl
           invalidate_old_processes
           sleep timeout
@@ -32,6 +33,10 @@ module Sidekiq::LimitFetch::Global
       redis do |it|
         old_processes.each {|process| it.srem PROCESS_SET, process }
       end
+    end
+
+    def add_dynamic(queues)
+      queues.add Sidekiq::Queue.all.map(&:name)
     end
 
     private

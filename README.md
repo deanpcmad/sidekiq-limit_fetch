@@ -136,7 +136,3 @@ You can dynamically set exceptions for queue blocking:
 
 Sponsored by [Evil Martians].
 [Evil Martians]: http://evilmartians.com/
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/dlanileonardo/sidekiq-limit_fetch/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-

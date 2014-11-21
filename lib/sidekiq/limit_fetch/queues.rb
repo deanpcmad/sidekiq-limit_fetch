@@ -5,16 +5,13 @@ class Sidekiq::LimitFetch
     def initialize(options)
       @queues    = options[:queues]
       @namespace = options[:namespace]
+      @dynamic   = options[:dynamic]
 
       options[:strict] ? strict_order! : weighted_order!
 
       set :limit, options[:limits]
       set :process_limit, options[:process_limits]
       set_blocks options[:blocking]
-    end
-
-    def add_queues(queues)
-      @queues.concat(queues).uniq!
     end
 
     def acquire
@@ -27,6 +24,16 @@ class Sidekiq::LimitFetch
       queues = restore
       queues.delete full_name[/queue:(.*)/, 1] if full_name
       selector.release queues, @namespace
+    end
+
+    def dynamic?
+      @dynamic
+    end
+
+    def add(queues)
+      queues.each do |queue|
+        @queues.push queue unless @queues.include? queue
+      end
     end
 
     private
