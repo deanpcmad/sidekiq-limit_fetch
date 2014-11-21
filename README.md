@@ -132,6 +132,20 @@ You can dynamically set exceptions for queue blocking:
   Sidekiq::Queue['queue1'].block_except 'queue2'
 ```
 
+### Dynamic queues
+
+You can support dynamic queues (that are not listed in sidekiq.yml but
+that have tasks pushed to them (usually with `Sidekiq::Client.push`)).
+
+To use this mode you need to specify a following line in sidekiq.yml:
+
+```yaml
+  :dynamic: true
+```
+
+Dynamic queues will be ran at the lowest priority.
+
+
 ### Thanks
 
 Sponsored by [Evil Martians].
