@@ -148,5 +148,6 @@ Dynamic queues will be ran at the lowest priority.
 
 ### Thanks
 
-Sponsored by [Evil Martians].
-[Evil Martians]: http://evilmartians.com/
+<a href="https://evilmartians.com/?utm_source=sidekiq-limit_fetch">
+<img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg" alt="Sponsored by Evil Martians" width="236" height="54"></a>
+ 
