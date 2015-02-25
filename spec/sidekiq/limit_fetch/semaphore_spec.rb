@@ -52,4 +52,14 @@ describe 'semaphore' do
     2.times { subject.acquire }
     subject.probed.should == 2
   end
+
+  it 'should pause tasks for a limited time' do
+    3.times { subject.acquire }
+    subject.pause_for_ms 50
+    2.times { subject.acquire }
+    subject.probed.should == 3
+    sleep(100.0 / 1000)
+    2.times { subject.acquire }
+    subject.probed.should == 5
+  end
 end

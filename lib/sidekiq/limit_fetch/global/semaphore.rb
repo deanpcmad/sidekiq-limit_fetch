@@ -76,6 +76,10 @@ module Sidekiq::LimitFetch::Global
       redis {|it| it.set "#{PREFIX}:pause:#@name", true }
     end
 
+    def pause_for_ms ms
+      redis {|it| it.psetex "#{PREFIX}:pause:#@name", ms, true }
+    end
+
     def unpause
       redis {|it| it.del "#{PREFIX}:pause:#@name" }
     end
