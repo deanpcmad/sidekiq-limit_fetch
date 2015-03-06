@@ -7,7 +7,7 @@ module Sidekiq
       :limit,         :limit=,
       :process_limit, :process_limit=,
       :acquire,       :release,
-      :pause,         :unpause,
+      :pause, :pause_for_ms, :unpause,
       :block,         :unblock,
       :paused?,       :blocking?,
       :unblocked,     :block_except,
