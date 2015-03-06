@@ -79,6 +79,7 @@ will be preserved.
   Sidekiq::Queue['name'].pause # prevents workers from running tasks from this queue
   Sidekiq::Queue['name'].paused? # => true
   Sidekiq::Queue['name'].unpause # allows workers to use the queue
+  Sidekiq::Queue['name'].pause_for_ms(1000) # will pause for a second
 ```
 
 ### Blocking queue mode
