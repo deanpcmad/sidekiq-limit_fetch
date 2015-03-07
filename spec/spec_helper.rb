@@ -7,6 +7,7 @@ Sidekiq.redis = { namespace: ENV['namespace'] }
 
 RSpec.configure do |config|
   config.before :each do
+    Sidekiq::Queue.reset_instances!
     Sidekiq.redis do |it|
       clean_redis = ->(queue) do
         it.pipelined do

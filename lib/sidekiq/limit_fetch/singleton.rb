@@ -12,4 +12,8 @@ module Sidekiq::LimitFetch::Singleton
   def instances
     @instances.values
   end
+
+  def reset_instances!
+    @instances = {}
+  end
 end
