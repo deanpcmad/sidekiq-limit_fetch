@@ -84,6 +84,13 @@ describe Sidekiq::Queue do
         queue.unblock
         queue.should_not be_blocking
       end
+
+      it 'should be marked as changed' do
+        queue = Sidekiq::Queue["uniq_#{name}"]
+        queue.should_not be_limit_changed
+        queue.limit = 3
+        queue.should be_limit_changed
+      end
     end
   end
 end

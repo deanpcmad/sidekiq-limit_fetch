@@ -18,11 +18,17 @@ module Sidekiq::LimitFetch::Global
     end
 
     def limit=(value)
+      @limit_changed = true
+
       if value
         redis {|it| it.set "#{PREFIX}:limit:#@name", value }
       else
         redis {|it| it.del "#{PREFIX}:limit:#@name" }
       end
+    end
+
+    def limit_changed?
+      @limit_changed
     end
 
     def process_limit

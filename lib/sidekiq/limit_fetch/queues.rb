@@ -46,7 +46,7 @@ class Sidekiq::LimitFetch
       limits ||= {}
       each_queue do |queue|
         limit = limits[queue.name.to_s] || limits[queue.name.to_sym]
-        queue.send "#{limit_type}=", limit
+        queue.send "#{limit_type}=", limit unless queue.limit_changed?
       end
     end
 

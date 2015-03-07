@@ -4,10 +4,10 @@ module Sidekiq
     attr_reader :rname
 
     def_delegators :lock,
-      :limit,         :limit=,
+      :limit,         :limit=,         :limit_changed?,
       :process_limit, :process_limit=,
       :acquire,       :release,
-      :pause, :pause_for_ms, :unpause,
+      :pause,         :pause_for_ms,   :unpause,
       :block,         :unblock,
       :paused?,       :blocking?,
       :unblocked,     :block_except,
