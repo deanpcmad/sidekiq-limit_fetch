@@ -36,6 +36,15 @@ class Sidekiq::LimitFetch
       end
     end
 
+    def strict_order!
+      @queues.uniq!
+      def ordered_queues; @queues end
+    end
+
+    def weighted_order!
+      def ordered_queues; @queues.shuffle.uniq end
+    end
+
     private
 
     def selector
@@ -60,15 +69,6 @@ class Sidekiq::LimitFetch
           Sidekiq::Queue[it].block
         end
       end
-    end
-
-    def strict_order!
-      @queues.uniq!
-      def ordered_queues; @queues end
-    end
-
-    def weighted_order!
-      def ordered_queues; @queues.shuffle.uniq end
     end
 
     def save(queues)
