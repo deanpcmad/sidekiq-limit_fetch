@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Sidekiq::LimitFetch do
+RSpec.describe Sidekiq::LimitFetch do
   before :each do
     Sidekiq.redis do |it|
       it.del 'queue:queue1'
@@ -17,31 +17,31 @@ describe Sidekiq::LimitFetch do
 
   it 'should acquire lock on queue for execution' do
     work = subject.retrieve_work
-    work.queue_name.should == 'queue1'
-    work.message.should == 'task1'
+    expect(work.queue_name).to eq 'queue1'
+    expect(work.message).to eq 'task1'
 
-    Sidekiq::Queue['queue1'].busy.should == 1
-    Sidekiq::Queue['queue2'].busy.should == 0
+    expect(Sidekiq::Queue['queue1'].busy).to eq 1
+    expect(Sidekiq::Queue['queue2'].busy).to eq 0
 
-    subject.retrieve_work.should_not be
+    expect(subject.retrieve_work).not_to be
     work.requeue
 
-    Sidekiq::Queue['queue1'].busy.should == 0
-    Sidekiq::Queue['queue2'].busy.should == 0
+    expect(Sidekiq::Queue['queue1'].busy).to eq 0
+    expect(Sidekiq::Queue['queue2'].busy).to eq 0
 
     work = subject.retrieve_work
-    work.message.should == 'task1'
+    expect(work.message).to eq 'task1'
 
-    Sidekiq::Queue['queue1'].busy.should == 1
-    Sidekiq::Queue['queue2'].busy.should == 0
+    expect(Sidekiq::Queue['queue1'].busy).to eq 1
+    expect(Sidekiq::Queue['queue2'].busy).to eq 0
 
-    subject.retrieve_work.should_not be
+    expect(subject.retrieve_work).not_to be
     work.acknowledge
 
-    Sidekiq::Queue['queue1'].busy.should == 0
-    Sidekiq::Queue['queue2'].busy.should == 0
+    expect(Sidekiq::Queue['queue1'].busy).to eq 0
+    expect(Sidekiq::Queue['queue2'].busy).to eq 0
 
     work = subject.retrieve_work
-    work.message.should == 'task2'
+    expect(work.message).to eq 'task2'
   end
 end

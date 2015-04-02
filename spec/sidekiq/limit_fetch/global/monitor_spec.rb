@@ -2,7 +2,7 @@ require 'spec_helper'
 
 Thread.abort_on_exception = true
 
-describe Sidekiq::LimitFetch::Global::Monitor do
+RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
   let(:queues) { double dynamic?: false }
   let(:monitor) { described_class.start! queues, ttl, timeout }
   let(:ttl) { 1 }
@@ -23,21 +23,21 @@ describe Sidekiq::LimitFetch::Global::Monitor do
     it 'should remove invalidated old locks' do
       2.times { queue.acquire }
       sleep 2*ttl
-      queue.probed.should == 2
+      expect(queue.probed).to eq 2
 
-      described_class.stub :update_heartbeat
+      allow(described_class).to receive(:update_heartbeat)
       sleep 2*ttl
-      queue.probed.should == 0
+      expect(queue.probed).to eq 0
     end
 
     it 'should remove invalid locks' do
       2.times { queue.acquire }
-      described_class.stub :update_heartbeat
+      allow(described_class).to receive(:update_heartbeat)
       Sidekiq.redis do |it|
         it.del Sidekiq::LimitFetch::Global::Monitor::PROCESS_SET
       end
       sleep 2*ttl
-      queue.probed.should == 0
+      expect(queue.probed).to eq 0
     end
   end
 end
