@@ -6,6 +6,9 @@ Sidekiq.logger = nil
 Sidekiq.redis = { namespace: ENV['namespace'] }
 
 RSpec.configure do |config|
+  config.order = :random
+  config.disable_monkey_patching!
+  config.raise_errors_for_deprecations!
   config.before :each do
     Sidekiq::Queue.reset_instances!
     Sidekiq.redis do |it|

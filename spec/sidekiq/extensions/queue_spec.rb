@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-describe Sidekiq::Queue do
+RSpec.describe Sidekiq::Queue do
   context 'singleton' do
     shared_examples :constructor do
       it 'with default name' do
         new_object = -> { described_class.send constructor }
-        new_object.call.should == new_object.call
+        expect(new_object.call).to eq new_object.call
       end
 
       it 'with given name' do
         new_object = ->(name) { described_class.send constructor, name }
-        new_object.call('name').should == new_object.call('name')
+        expect(new_object.call('name')).to eq new_object.call('name')
       end
     end
 
@@ -29,67 +29,67 @@ describe Sidekiq::Queue do
       let(:queue) { Sidekiq::Queue[name] }
 
       it 'should be available' do
-        queue.acquire.should be
+        expect(queue.acquire).to be
       end
 
       it 'should be pausable' do
         queue.pause
-        queue.acquire.should_not be
+        expect(queue.acquire).not_to be
       end
 
       it 'should be continuable' do
         queue.pause
         queue.unpause
-        queue.acquire.should be
+        expect(queue.acquire).to be
       end
 
       it 'should be limitable' do
         queue.limit = 1
-        queue.acquire.should be
-        queue.acquire.should_not be
+        expect(queue.acquire).to be
+        expect(queue.acquire).not_to be
       end
 
       it 'should be resizable' do
         queue.limit = 0
-        queue.acquire.should_not be
+        expect(queue.acquire).not_to be
         queue.limit = nil
-        queue.acquire.should be
+        expect(queue.acquire).to be
       end
 
       it 'should be countable' do
         queue.limit = 3
         5.times { queue.acquire }
-        queue.probed.should == 3
+        expect(queue.probed).to eq 3
       end
 
       it 'should be releasable' do
         queue.acquire
-        queue.probed.should == 1
+        expect(queue.probed).to eq 1
         queue.release
-        queue.probed.should == 0
+        expect(queue.probed).to eq 0
       end
 
       it 'should tell if paused' do
-        queue.should_not be_paused
+        expect(queue).not_to be_paused
         queue.pause
-        queue.should be_paused
+        expect(queue).to be_paused
         queue.unpause
-        queue.should_not be_paused
+        expect(queue).not_to be_paused
       end
 
       it 'should tell if blocking' do
-        queue.should_not be_blocking
+        expect(queue).not_to be_blocking
         queue.block
-        queue.should be_blocking
+        expect(queue).to be_blocking
         queue.unblock
-        queue.should_not be_blocking
+        expect(queue).not_to be_blocking
       end
 
       it 'should be marked as changed' do
         queue = Sidekiq::Queue["uniq_#{name}"]
-        queue.should_not be_limit_changed
+        expect(queue).not_to be_limit_changed
         queue.limit = 3
-        queue.should be_limit_changed
+        expect(queue).to be_limit_changed
       end
     end
   end
