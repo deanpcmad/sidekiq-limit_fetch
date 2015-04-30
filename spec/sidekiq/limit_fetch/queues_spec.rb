@@ -3,16 +3,18 @@ require 'spec_helper'
 RSpec.describe Sidekiq::LimitFetch::Queues do
   subject { described_class.new options }
 
-  let(:queues)   { %w[queue1 queue2] }
-  let(:limits)   {{ 'queue1' => 3 }}
-  let(:strict)   { true }
-  let(:blocking) {}
+  let(:queues)         { %w[queue1 queue2] }
+  let(:limits)         {{ 'queue1' => 3 }}
+  let(:strict)         { true }
+  let(:blocking)       {}
+  let(:process_limits) {{ 'queue2' => 3 }}
 
   let(:options) do
     { queues:   queues,
       limits:   limits,
       strict:   strict,
       blocking: blocking,
+      process_limits: process_limits,
       namespace: Sidekiq::LimitFetch::Redis.determine_namespace }
   end
 
@@ -80,6 +82,11 @@ RSpec.describe Sidekiq::LimitFetch::Queues do
     subject
     expect(Sidekiq::Queue['queue1'].limit).to eq 3
     expect(Sidekiq::Queue['queue2'].limit).not_to be
+  end
+
+  it 'should set process_limits' do
+    subject
+    expect(Sidekiq::Queue['queue2'].process_limit).to eq 3
   end
 
   context 'without strict flag' do

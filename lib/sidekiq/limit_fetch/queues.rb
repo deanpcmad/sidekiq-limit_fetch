@@ -9,8 +9,8 @@ class Sidekiq::LimitFetch
 
       options[:strict] ? strict_order! : weighted_order!
 
-      set :limit, options[:limits]
       set :process_limit, options[:process_limits]
+      set :limit, options[:limits]
       set_blocks options[:blocking]
     end
 
