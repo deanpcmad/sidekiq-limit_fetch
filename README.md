@@ -19,7 +19,7 @@ Add this line to your application's Gemfile:
 redis 2.6 or newer
 
 **Important note:** At this moment, `sidekiq-limit_fetch` is incompatible with
-- Sidekiq Pro's `reliable_fetch`
+- sidekiq pro's `reliable_fetch`
 - `sidekiq-rate-limiter`
 - any other plugin that rewrites fetch strategy of sidekiq.
 
