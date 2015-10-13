@@ -34,7 +34,7 @@ class Sidekiq::LimitFetch
   private
 
   def fetch_message
-    queue, _ = redis_brpop *@queues.acquire, Sidekiq::Fetcher::TIMEOUT
+    queue, _ = redis_brpop *@queues.acquire, Sidekiq::BasicFetch::TIMEOUT
   ensure
     @queues.release_except queue
   end

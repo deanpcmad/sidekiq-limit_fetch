@@ -1,5 +1,4 @@
 require 'sidekiq/limit_fetch'
-require 'celluloid/autostart'
 require 'sidekiq/fetch'
 
 Sidekiq.logger = nil
