@@ -31,7 +31,6 @@ class Sidekiq::LimitFetch
 
   def initialize(options)
     @queues = Queues.new options.merge(namespace: determine_namespace)
-    Global::Monitor.start! @queues
   end
 
   def retrieve_work
