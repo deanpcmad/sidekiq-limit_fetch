@@ -1,4 +1,5 @@
 require 'sidekiq'
+require 'sidekiq/fetch'
 require 'sidekiq/util'
 require 'sidekiq/api'
 require 'forwardable'
@@ -17,13 +18,19 @@ class Sidekiq::LimitFetch
   include Redis
   Sidekiq.options[:fetch] = self
 
+  TIMEOUT = \
+    if Sidekiq::VERSION < '4.0.0'
+      Sidekiq::Fetcher::TIMEOUT
+    else
+      Sidekiq::BasicFetch::TIMEOUT
+    end
+
   def self.bulk_requeue(*args)
     Sidekiq::BasicFetch.bulk_requeue *args
   end
 
   def initialize(options)
     @queues = Queues.new options.merge(namespace: determine_namespace)
-    Global::Monitor.start! @queues
   end
 
   def retrieve_work
@@ -34,7 +41,7 @@ class Sidekiq::LimitFetch
   private
 
   def fetch_message
-    queue, _ = redis_brpop *@queues.acquire, Sidekiq::Fetcher::TIMEOUT
+    queue, _ = redis_brpop *@queues.acquire, TIMEOUT
   ensure
     @queues.release_except queue
   end

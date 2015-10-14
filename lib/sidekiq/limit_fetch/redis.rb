@@ -3,8 +3,8 @@ module Sidekiq::LimitFetch::Redis
 
   def nonblocking_redis
     redis do |redis|
-      # Celluloid 0.16 broke this method
-      if Celluloid::VERSION.to_f >= 0.16
+      # Celluloid 0.16 broke this method		+      yield redis
+      if Sidekiq::VERSION >= '4.0.0' || Celluloid::VERSION.to_f >= 0.16
         yield redis
       else
       # prevent blocking of fetcher

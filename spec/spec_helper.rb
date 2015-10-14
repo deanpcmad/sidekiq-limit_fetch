@@ -1,6 +1,7 @@
-require 'sidekiq/limit_fetch'
-require 'celluloid/autostart'
+require 'sidekiq/version'
+require 'celluloid/autostart' if Sidekiq::VERSION < '4.0.0'
 require 'sidekiq/fetch'
+require 'sidekiq/limit_fetch'
 
 Sidekiq.logger = nil
 Sidekiq.redis = { namespace: ENV['namespace'] }
