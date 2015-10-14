@@ -149,6 +149,9 @@ To use this mode you need to specify a following line in sidekiq.yml:
 
 Dynamic queues will be ran at the lowest priority.
 
+### Maintenance
+
+If you use ```flushdb```, restart the sidekiq process to re-populate the dynamic configuration.
 
 ### Thanks
 
