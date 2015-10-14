@@ -1,4 +1,4 @@
-module Sidekiq::LimitFetch::Singleton
+module Sidekiq::LimitFetch::Instances
   def self.extended(klass)
     klass.instance_variable_set :@instances, {}
   end

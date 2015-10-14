@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe Sidekiq::Queue do
   context 'singleton' do
     shared_examples :constructor do

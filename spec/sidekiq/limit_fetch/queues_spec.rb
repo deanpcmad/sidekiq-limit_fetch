@@ -1,8 +1,4 @@
-require 'spec_helper'
-
 RSpec.describe Sidekiq::LimitFetch::Queues do
-  subject { described_class.new options }
-
   let(:queues)         { %w[queue1 queue2] }
   let(:limits)         {{ 'queue1' => 3 }}
   let(:strict)         { true }
@@ -14,9 +10,10 @@ RSpec.describe Sidekiq::LimitFetch::Queues do
       limits:   limits,
       strict:   strict,
       blocking: blocking,
-      process_limits: process_limits,
-      namespace: Sidekiq::LimitFetch::Redis.determine_namespace }
+      process_limits: process_limits }
   end
+
+  before { subject.start options }
 
   it 'should acquire queues' do
     subject.acquire

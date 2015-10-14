@@ -1,21 +1,11 @@
-require 'spec_helper'
-
-Thread.abort_on_exception = true
-
 RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
-  let(:queues) { double dynamic?: false }
-  let(:monitor) { described_class.start! queues, ttl, timeout }
+  let(:monitor) { described_class.start! ttl, timeout }
   let(:ttl) { 1 }
   let(:queue) { Sidekiq::Queue[name] }
   let(:name) { 'default' }
 
-  before :each do
-    monitor
-  end
-
-  after :each do
-    monitor.kill
-  end
+  before { monitor }
+  after { monitor.kill }
 
   context 'old locks' do
     let(:timeout) { 0.5 }

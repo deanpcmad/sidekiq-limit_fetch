@@ -1,6 +1,3 @@
-require 'sidekiq/version'
-require 'celluloid/autostart' if Sidekiq::VERSION < '4.0.0'
-require 'sidekiq/fetch'
 require 'sidekiq/limit_fetch'
 
 Sidekiq.logger = nil
@@ -10,7 +7,7 @@ RSpec.configure do |config|
   config.order = :random
   config.disable_monkey_patching!
   config.raise_errors_for_deprecations!
-  config.before :each do
+  config.before do
     Sidekiq::Queue.reset_instances!
     Sidekiq.redis do |it|
       clean_redis = ->(queue) do

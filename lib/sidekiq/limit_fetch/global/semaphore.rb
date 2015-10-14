@@ -1,7 +1,5 @@
 module Sidekiq::LimitFetch::Global
   class Semaphore
-    include Sidekiq::LimitFetch::Redis
-
     PREFIX = 'limit_fetch'
 
     attr_reader :local_busy
@@ -45,7 +43,7 @@ module Sidekiq::LimitFetch::Global
     end
 
     def acquire
-      Selector.acquire([@name], determine_namespace).size > 0
+      Selector.acquire([@name], namespace).size > 0
     end
 
     def release
@@ -162,6 +160,16 @@ module Sidekiq::LimitFetch::Global
         it.lrem "#{PREFIX}:probed:#@name", 0, process
         it.lrem "#{PREFIX}:busy:#@name", 0, process
       end
+    end
+
+    private
+
+    def redis(&block)
+      Sidekiq.redis(&block)
+    end
+
+    def namespace
+      Sidekiq::LimitFetch::Queues.namespace
     end
   end
 end

@@ -1,63 +1,39 @@
-require 'sidekiq'
-require 'sidekiq/fetch'
-require 'sidekiq/util'
-require 'sidekiq/api'
 require 'forwardable'
+require 'sidekiq'
+require 'sidekiq/manager'
+require 'sidekiq/api'
 
-class Sidekiq::LimitFetch
+module Sidekiq::LimitFetch
   autoload :UnitOfWork, 'sidekiq/limit_fetch/unit_of_work'
 
-  require_relative 'limit_fetch/redis'
-  require_relative 'limit_fetch/singleton'
+  require_relative 'limit_fetch/instances'
   require_relative 'limit_fetch/queues'
   require_relative 'limit_fetch/global/semaphore'
   require_relative 'limit_fetch/global/selector'
   require_relative 'limit_fetch/global/monitor'
   require_relative 'extensions/queue'
+  require_relative 'extensions/manager'
 
-  include Redis
-  Sidekiq.options[:fetch] = self
+  extend self
 
-  TIMEOUT = \
-    if Sidekiq::VERSION < '4.0.0'
-      Sidekiq::Fetcher::TIMEOUT
-    else
-      Sidekiq::BasicFetch::TIMEOUT
-    end
-
-  def self.bulk_requeue(*args)
-    Sidekiq::BasicFetch.bulk_requeue *args
-  end
-
-  def initialize(options)
-    @queues = Queues.new options.merge(namespace: determine_namespace)
+  def new(_)
+    self
   end
 
   def retrieve_work
-    queue, message = fetch_message
+    queue, message = redis_brpop *Queues.acquire, Sidekiq::BasicFetch::TIMEOUT
+    Queues.release_except queue
     UnitOfWork.new queue, message if message
+  end
+
+  def bulk_requeue(*args)
+    Sidekiq::BasicFetch.bulk_requeue(*args)
   end
 
   private
 
-  def fetch_message
-    queue, _ = redis_brpop *@queues.acquire, TIMEOUT
-  ensure
-    @queues.release_except queue
-  end
-
   def redis_brpop(*args)
     return if args.size < 2
-    query = -> redis { redis.brpop *args }
-
-    if busy_local_queues.any? {|queue| not args.include? queue.rname }
-      nonblocking_redis(&query)
-    else
-      redis(&query)
-    end
-  end
-
-  def busy_local_queues
-    Sidekiq::Queue.instances.select(&:local_busy?)
+    Sidekiq.redis {|it| it.brpop *args }
   end
 end
