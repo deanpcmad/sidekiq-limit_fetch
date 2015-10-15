@@ -7,7 +7,7 @@ class Sidekiq::Manager
 
     def start
       Sidekiq::LimitFetch::Queues.start options
-      Global::Monitor.start!
+      Sidekiq::LimitFetch::Global::Monitor.start!
       super
     end
   end
