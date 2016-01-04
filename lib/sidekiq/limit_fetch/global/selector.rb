@@ -2,6 +2,8 @@ module Sidekiq::LimitFetch::Global
   module Selector
     extend self
 
+    MUTEX_FOR_UUID = Mutex.new
+
     def acquire(queues, namespace)
       redis_eval :acquire, [namespace, uuid, queues]
     end
@@ -15,9 +17,7 @@ module Sidekiq::LimitFetch::Global
       # then @uuid can be overwritten
       # - if we'll remove "@uuid ||=" from outside of mutex
       # then each read will lead to mutex
-      @uuid ||= Thread.exclusive do
-        @uuid || SecureRandom.uuid
-      end
+      @uuid ||= MUTEX_FOR_UUID.synchronize { @uuid || SecureRandom.uuid }
     end
 
     private
