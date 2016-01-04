@@ -19,7 +19,7 @@ RSpec.describe Sidekiq::LimitFetch do
   it 'should acquire lock on queue for execution' do
     work = subject.retrieve_work
     expect(work.queue_name).to eq 'queue1'
-    expect(work.message).to eq 'task1'
+    expect(work.job).to eq 'task1'
 
     expect(Sidekiq::Queue['queue1'].busy).to eq 1
     expect(Sidekiq::Queue['queue2'].busy).to eq 0
@@ -31,7 +31,7 @@ RSpec.describe Sidekiq::LimitFetch do
     expect(Sidekiq::Queue['queue2'].busy).to eq 0
 
     work = subject.retrieve_work
-    expect(work.message).to eq 'task1'
+    expect(work.job).to eq 'task1'
 
     expect(Sidekiq::Queue['queue1'].busy).to eq 1
     expect(Sidekiq::Queue['queue2'].busy).to eq 0
@@ -43,6 +43,6 @@ RSpec.describe Sidekiq::LimitFetch do
     expect(Sidekiq::Queue['queue2'].busy).to eq 0
 
     work = subject.retrieve_work
-    expect(work.message).to eq 'task2'
+    expect(work.job).to eq 'task2'
   end
 end
