@@ -8,6 +8,7 @@ module Sidekiq::LimitFetch
 
   require_relative 'limit_fetch/instances'
   require_relative 'limit_fetch/queues'
+  require_relative 'limit_fetch/version'
   require_relative 'limit_fetch/global/semaphore'
   require_relative 'limit_fetch/global/selector'
   require_relative 'limit_fetch/global/monitor'
