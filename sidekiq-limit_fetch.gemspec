@@ -1,10 +1,6 @@
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'sidekiq/limit_fetch/version'
-
 Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-limit_fetch'
-  gem.version       = Sidekiq::LimitFetch::VERSION
+  gem.version       = '3.0.1'
   gem.license       = 'MIT'
   gem.authors       = 'brainopia'
   gem.email         = 'brainopia@evilmartians.com'
