@@ -1,6 +1,6 @@
 module Sidekiq
   class LimitFetch::UnitOfWork < BasicFetch::UnitOfWork
-    def initialize(queue, message)
+    def initialize(queue, job)
       super
       Queue[queue_name].increase_busy
     end

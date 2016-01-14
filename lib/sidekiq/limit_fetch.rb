@@ -21,9 +21,9 @@ module Sidekiq::LimitFetch
   end
 
   def retrieve_work
-    queue, message = redis_brpop *Queues.acquire, Sidekiq::BasicFetch::TIMEOUT
-    Queues.release_except queue
-    UnitOfWork.new queue, message if message
+    queue, job = redis_brpop *Queues.acquire, Sidekiq::BasicFetch::TIMEOUT
+    Queues.release_except(queue)
+    UnitOfWork.new(queue, job) if job
   end
 
   def bulk_requeue(*args)
