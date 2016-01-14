@@ -16,14 +16,10 @@ Add this line to your application's Gemfile:
 
 ### Requirements
 
-redis 2.6 or newer
-
 **Important note:** At this moment, `sidekiq-limit_fetch` is incompatible with
 - sidekiq pro's `reliable_fetch`
 - `sidekiq-rate-limiter`
 - any other plugin that rewrites fetch strategy of sidekiq.
-
-https://github.com/mperham/sidekiq/issues/1508 — a sidekiq admin busy page is unreliable, so if you need to check how many workers are running a queue use a `#busy` method described below.
 
 ## Usage
 
