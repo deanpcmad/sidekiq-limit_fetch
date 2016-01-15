@@ -1,7 +1,13 @@
 Thread.abort_on_exception = true
 
 RSpec.describe Sidekiq::LimitFetch do
+  let(:options) {{ queues: queues, limits: limits }}
+  let(:queues) { %w(queue1 queue1 queue2 queue2) }
+  let(:limits) {{ 'queue1' => 1, 'queue2' => 2 }}
+
   before do
+    subject::Queues.start options 
+
     Sidekiq.redis do |it|
       it.del 'queue:queue1'
       it.lpush 'queue:queue1', 'task1'
@@ -9,12 +15,6 @@ RSpec.describe Sidekiq::LimitFetch do
       it.expire 'queue:queue1', 30
     end
   end
-
-  let(:options) {{ queues: queues, limits: limits }}
-  let(:queues) { %w(queue1 queue1 queue2 queue2) }
-  let(:limits) {{ 'queue1' => 1, 'queue2' => 2 }}
-
-  before { subject::Queues.start options }
 
   it 'should acquire lock on queue for execution' do
     work = subject.retrieve_work
