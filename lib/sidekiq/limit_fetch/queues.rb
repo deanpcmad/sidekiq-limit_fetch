@@ -48,7 +48,7 @@ module Sidekiq::LimitFetch::Queues
   def namespace
     @namespace ||= Sidekiq.redis do |it|
       if it.respond_to?(:namespace) and it.namespace
-        it.namespace + ':'
+        "#{it.namespace}:"
       else
         ''
       end
