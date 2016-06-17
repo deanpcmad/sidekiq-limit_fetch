@@ -1,11 +1,7 @@
 language: ruby
 rvm:
-  - 2.3.0
-  - 2.2.1
-  - jruby-head
-  - rbx-2
+  - 2.3
+  - 2.2
+  - jruby
 services:
   - redis-server
-matrix:
-  allow_failures:
-    - rvm: rbx-2
