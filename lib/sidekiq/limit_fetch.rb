@@ -21,7 +21,7 @@ module Sidekiq::LimitFetch
   end
 
   def retrieve_work
-    queue, job = redis_brpop *Queues.acquire, Sidekiq::BasicFetch::TIMEOUT
+    queue, job = redis_brpop(Queues.acquire)
     Queues.release_except(queue)
     UnitOfWork.new(queue, job) if job
   end
@@ -32,8 +32,14 @@ module Sidekiq::LimitFetch
 
   private
 
-  def redis_brpop(*args)
-    return if args.size < 2
-    Sidekiq.redis {|it| it.brpop *args }
+  TIMEOUT = Sidekiq::BasicFetch::TIMEOUT
+
+  def redis_brpop(queues)
+    if queues.empty?
+      sleep TIMEOUT  # there are no queues to handle, so lets sleep
+      []             # and return nothing
+    else
+      Sidekiq.redis { |it| it.brpop *queues, TIMEOUT }
+    end
   end
 end
