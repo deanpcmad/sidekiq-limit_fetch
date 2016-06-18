@@ -30,6 +30,13 @@ module Sidekiq::LimitFetch
     Sidekiq::BasicFetch.bulk_requeue(*args)
   end
 
+  def redis_retryable
+    yield
+  rescue Redis::BaseConnectionError
+    sleep 1
+    retry
+  end
+
   private
 
   TIMEOUT = Sidekiq::BasicFetch::TIMEOUT

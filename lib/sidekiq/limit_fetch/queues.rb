@@ -23,7 +23,10 @@ module Sidekiq::LimitFetch::Queues
   def release_except(full_name)
     queues = restore
     queues.delete full_name[/queue:(.*)/, 1] if full_name
-    selector.release queues, namespace
+
+    Sidekiq::LimitFetch.redis_retryable do
+      selector.release queues, namespace
+    end
   end
 
   def dynamic?

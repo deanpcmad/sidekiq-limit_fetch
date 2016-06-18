@@ -10,9 +10,12 @@ module Sidekiq::LimitFetch::Global
     def start!(ttl=HEARTBEAT_TTL, timeout=REFRESH_TIMEOUT)
       Thread.new do
         loop do
-          add_dynamic_queues
-          update_heartbeat ttl
-          invalidate_old_processes
+          Sidekiq::LimitFetch.redis_retryable do
+            add_dynamic_queues
+            update_heartbeat ttl
+            invalidate_old_processes
+          end
+
           sleep timeout
         end
       end
