@@ -4,14 +4,18 @@ module Sidekiq::LimitFetch::Queues
   THREAD_KEY = :acquired_queues
 
   def start(options)
-    @queues    = options[:queues]
-    @dynamic   = options[:dynamic]
+    @queues         = options[:queues]
+    @dynamic        = options[:dynamic]
+
+    @limits         = options[:limits] || {}
+    @process_limits = options[:process_limits] || {}
+    @blocks         = options[:blocking] || []
 
     options[:strict] ? strict_order! : weighted_order!
 
-    set :process_limit, options[:process_limits]
-    set :limit, options[:limits]
-    set_blocks options[:blocking]
+    apply_process_limit_to_queues
+    apply_limit_to_queues
+    apply_blocks_to_queues
   end
 
   def acquire
@@ -35,7 +39,12 @@ module Sidekiq::LimitFetch::Queues
 
   def add(queues)
     queues.each do |queue|
-      @queues.push queue unless @queues.include? queue
+      unless @queues.include? queue
+        apply_process_limit_to_queue(queue)
+        apply_limit_to_queue(queue)
+
+        @queues.push queue
+      end
     end
   end
 
@@ -60,28 +69,47 @@ module Sidekiq::LimitFetch::Queues
 
   private
 
-  def selector
-    Sidekiq::LimitFetch::Global::Selector
-  end
-
-  def set(limit_type, limits)
-    limits ||= {}
-    each_queue do |queue|
-      limit = limits[queue.name.to_s] || limits[queue.name.to_sym]
-      queue.send "#{limit_type}=", limit unless queue.limit_changed?
+  def apply_process_limit_to_queues
+    @queues.uniq.each do |queue_name|
+      apply_process_limit_to_queue(queue_name)
     end
   end
 
-  def set_blocks(blocks)
-    each_queue(&:unblock)
+  def apply_process_limit_to_queue(queue_name)
+    queue = Sidekiq::Queue[queue_name]
+    queue.process_limit = @process_limits[queue_name.to_s] || @process_limits[queue_name.to_sym]
+  end
 
-    blocks.to_a.each do |it|
+  def apply_limit_to_queues
+    @queues.uniq.each do |queue_name|
+      apply_limit_to_queue(queue_name)
+    end
+  end
+
+  def apply_limit_to_queue(queue_name)
+    queue = Sidekiq::Queue[queue_name]
+
+    unless queue.limit_changed?
+      queue.limit = @limits[queue_name.to_s] || @limits[queue_name.to_sym]
+    end
+  end
+
+  def apply_blocks_to_queues
+    @queues.uniq.each do |queue_name|
+      Sidekiq::Queue[queue_name].unblock
+    end
+
+    @blocks.to_a.each do |it|
       if it.is_a? Array
         it.each {|name| Sidekiq::Queue[name].block_except it }
       else
         Sidekiq::Queue[it].block
       end
     end
+  end
+
+  def selector
+    Sidekiq::LimitFetch::Global::Selector
   end
 
   def save(queues)
@@ -92,9 +120,5 @@ module Sidekiq::LimitFetch::Queues
     Thread.current[THREAD_KEY] || []
   ensure
     Thread.current[THREAD_KEY] = nil
-  end
-
-  def each_queue
-    @queues.uniq.each {|it| yield Sidekiq::Queue[it] }
   end
 end
