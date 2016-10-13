@@ -5,6 +5,6 @@ before_install:
 rvm:
   - 2.3.1
   - 2.2.5
-  - jruby-head
+  - jruby
 services:
   - redis-server
