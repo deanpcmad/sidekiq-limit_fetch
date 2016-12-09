@@ -1,8 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'rails'
-gem 'sinatra'
-gem 'celluloid'
 gem 'launchy'
 gem 'sidekiq', github: 'mperham/sidekiq'
 gem 'sidekiq-limit_fetch', path: '..'

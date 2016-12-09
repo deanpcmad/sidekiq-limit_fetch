@@ -78,7 +78,7 @@ namespace :demo do
       Rack::Server.start app: Sidekiq::Web, Port: 3000
     end
     sleep 1
-    Launchy.open 'http://127.0.0.1:3000/workers?poll=true'
+    Launchy.open 'http://127.0.0.1:3000/busy?poll=true'
   end
 
   def run_sidekiq_workers(options)
