@@ -23,6 +23,9 @@ Add this line to your application's Gemfile:
 
 ## Usage
 
+### Require
+You must `require 'sidekiq-limit_fetch'` if it isn't already. It will not work until then.
+
 ### Limits
 
 Specify limits which you want to place on queues inside sidekiq.yml:
