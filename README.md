@@ -74,7 +74,7 @@ You can see how many workers currently handling a queue:
 
 ### Pauses
 
-You can also pause your queues temporarely. Upon continuing their limits
+You can also pause your queues temporarily. Upon continuing their limits
 will be preserved.
 
 ```ruby
