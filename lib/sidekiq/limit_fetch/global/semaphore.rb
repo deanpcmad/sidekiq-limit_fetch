@@ -109,6 +109,14 @@ module Sidekiq::LimitFetch::Global
       redis {|it| it.get "#{PREFIX}:block:#@name" }
     end
 
+    def clear_limits
+      redis do |it|
+        %w(block busy limit pause probed process_limit).each do |key|
+          it.del "#{PREFIX}:#{key}:#@name"
+        end
+      end
+    end
+
     def increase_local_busy
       @lock.synchronize { @local_busy += 1 }
     end

@@ -38,6 +38,7 @@ module Sidekiq::LimitFetch::Queues
   end
 
   def add(queues)
+    return unless queues
     queues.each do |queue|
       unless @queues.include? queue
         apply_process_limit_to_queue(queue)
@@ -46,6 +47,22 @@ module Sidekiq::LimitFetch::Queues
         @queues.push queue
       end
     end
+  end
+
+  def remove(queues)
+    return unless queues
+    queues.each do |queue|
+      if @queues.include? queue
+        clear_limits_for_queue(queue)
+        @queues.delete queue
+        Sidekiq::Queue.delete_instance(queue)
+      end
+    end
+  end
+
+  def handle(queues)
+    add(queues - @queues)
+    remove(@queues - queues)
   end
 
   def strict_order!
@@ -106,6 +123,11 @@ module Sidekiq::LimitFetch::Queues
         Sidekiq::Queue[it].block
       end
     end
+  end
+
+  def clear_limits_for_queue(queue_name)
+    queue = Sidekiq::Queue[queue_name]
+    queue.clear_limits
   end
 
   def selector

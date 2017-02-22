@@ -16,4 +16,8 @@ module Sidekiq::LimitFetch::Instances
   def reset_instances!
     @instances = {}
   end
+
+  def delete_instance(name)
+    @instances.delete [name]
+  end
 end
