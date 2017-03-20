@@ -3,10 +3,10 @@
 Sidekiq strategy to support a granular queue control –
 limiting, pausing, blocking, querying.
 
-[![Build Status](https://secure.travis-ci.org/brainopia/sidekiq-limit_fetch.png)](http://travis-ci.org/brainopia/sidekiq-limit_fetch)
-[![Gem Version](https://badge.fury.io/rb/sidekiq-limit_fetch.png)](http://badge.fury.io/rb/sidekiq-limit_fetch)
-[![Dependency Status](https://gemnasium.com/brainopia/sidekiq-limit_fetch.png)](https://gemnasium.com/brainopia/sidekiq-limit_fetch)
-[![Code Climate](https://codeclimate.com/github/brainopia/sidekiq-limit_fetch.png)](https://codeclimate.com/github/brainopia/sidekiq-limit_fetch)
+[![Build Status](https://secure.travis-ci.org/brainopia/sidekiq-limit_fetch.svg)](http://travis-ci.org/brainopia/sidekiq-limit_fetch)
+[![Gem Version](https://badge.fury.io/rb/sidekiq-limit_fetch.svg)](http://badge.fury.io/rb/sidekiq-limit_fetch)
+[![Dependency Status](https://gemnasium.com/brainopia/sidekiq-limit_fetch.svg)](https://gemnasium.com/brainopia/sidekiq-limit_fetch)
+[![Code Climate](https://codeclimate.com/github/brainopia/sidekiq-limit_fetch.svg)](https://codeclimate.com/github/brainopia/sidekiq-limit_fetch)
 
 ## Installation
 
