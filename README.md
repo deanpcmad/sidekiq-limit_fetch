@@ -14,7 +14,7 @@ Add this line to your application's Gemfile:
 
     gem 'sidekiq-limit_fetch'
 
-### Requirements
+### Limitations
 
 **Important note:** At this moment, `sidekiq-limit_fetch` is incompatible with
 - sidekiq pro's `reliable_fetch`
