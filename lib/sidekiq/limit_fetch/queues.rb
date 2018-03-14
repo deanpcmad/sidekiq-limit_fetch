@@ -5,6 +5,7 @@ module Sidekiq::LimitFetch::Queues
 
   def start(options)
     @queues         = options[:queues]
+    @startup_queues = options[:queues].dup
     @dynamic        = options[:dynamic]
 
     @limits         = options[:limits] || {}
@@ -37,12 +38,18 @@ module Sidekiq::LimitFetch::Queues
     @dynamic
   end
 
+  def startup_queue?(queue)
+    @startup_queues.include?(queue)
+  end
+
   def add(queues)
     return unless queues
     queues.each do |queue|
       unless @queues.include? queue
-        apply_process_limit_to_queue(queue)
-        apply_limit_to_queue(queue)
+        if startup_queue?(queue)
+          apply_process_limit_to_queue(queue)
+          apply_limit_to_queue(queue)
+        end
 
         @queues.push queue
       end
