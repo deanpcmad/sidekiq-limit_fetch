@@ -19,15 +19,17 @@ module Sidekiq::LimitFetch::Queues
   end
 
   def acquire
-    selector.acquire(ordered_queues, namespace)
-      .tap {|it| save it }
-      .map {|it| "queue:#{it}" }
+    queues = saved
+    queues ||= Sidekiq::LimitFetch.redis_retryable do
+      selector.acquire(ordered_queues, namespace)
+    end
+    save queues
+    queues.map { |it| "queue:#{it}" }
   end
 
   def release_except(full_name)
     queues = restore
     queues.delete full_name[/queue:(.*)/, 1] if full_name
-
     Sidekiq::LimitFetch.redis_retryable do
       selector.release queues, namespace
     end
@@ -112,13 +114,17 @@ module Sidekiq::LimitFetch::Queues
     Sidekiq::LimitFetch::Global::Selector
   end
 
+  def saved
+    Thread.current[THREAD_KEY]
+  end
+
   def save(queues)
     Thread.current[THREAD_KEY] = queues
   end
 
   def restore
-    Thread.current[THREAD_KEY] || []
+    saved || []
   ensure
-    Thread.current[THREAD_KEY] = nil
+    save nil
   end
 end
