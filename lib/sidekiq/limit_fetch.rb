@@ -35,6 +35,15 @@ module Sidekiq::LimitFetch
   rescue Redis::BaseConnectionError
     sleep 1
     retry
+  rescue Redis::CommandError => error
+    # If Redis was restarted and is still loading its snapshot,
+    # then we should treat this as a temporary connection error too.
+    if error.message =~ /^LOADING/
+      sleep 1
+      retry
+    else
+      raise
+    end
   end
 
   private
