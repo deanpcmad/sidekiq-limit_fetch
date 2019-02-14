@@ -45,8 +45,6 @@ module Sidekiq::LimitFetch
 
   private
 
-  TIMEOUT = Sidekiq::BasicFetch::TIMEOUT
-
   def redis_brpop(queues)
     if queues.empty?
       sleep TIMEOUT  # there are no queues to handle, so lets sleep
