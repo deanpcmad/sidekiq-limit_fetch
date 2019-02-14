@@ -19,9 +19,12 @@ module Sidekiq::LimitFetch::Queues
   end
 
   def acquire
-    selector.acquire(ordered_queues, namespace)
-      .tap {|it| save it }
-      .map {|it| "queue:#{it}" }
+    queues = saved
+    queues ||= Sidekiq::LimitFetch.redis_retryable do
+      selector.acquire(ordered_queues, namespace)
+    end
+    save queues
+    queues.map { |it| "queue:#{it}" }
   end
 
   def release_except(full_name)
@@ -116,9 +119,13 @@ module Sidekiq::LimitFetch::Queues
     Thread.current[THREAD_KEY] = queues
   end
 
+  def saved
+    Thread.current[THREAD_KEY]
+  end
+
   def restore
-    Thread.current[THREAD_KEY] || []
+    saved || []
   ensure
-    Thread.current[THREAD_KEY] = nil
+    save nil
   end
 end
