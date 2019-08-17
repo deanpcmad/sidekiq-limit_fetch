@@ -2,6 +2,7 @@ require 'forwardable'
 require 'sidekiq'
 require 'sidekiq/manager'
 require 'sidekiq/api'
+require 'redlock'
 
 module Sidekiq::LimitFetch
   autoload :UnitOfWork, 'sidekiq/limit_fetch/unit_of_work'

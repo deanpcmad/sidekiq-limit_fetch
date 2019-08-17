@@ -10,10 +10,14 @@ module Sidekiq::LimitFetch::Global
     def start!(ttl=HEARTBEAT_TTL, timeout=REFRESH_TIMEOUT)
       Thread.new do
         loop do
-          Sidekiq::LimitFetch.redis_retryable do
-            add_dynamic_queues
-            update_heartbeat ttl
-            invalidate_old_processes
+          lock_manager.lock('sidekiq_limitfetch_monitor', HEARTBEAT_TTL * 1000) do |locked|
+            if locked
+              Sidekiq::LimitFetch.redis_retryable do
+                add_dynamic_queues
+                update_heartbeat ttl
+                invalidate_old_processes
+              end
+            end
           end
 
           sleep timeout
@@ -43,6 +47,16 @@ module Sidekiq::LimitFetch::Global
     end
 
     private
+
+    def lock_manager
+      @lock_manager ||= Redlock::Client.new([redis_config])
+    end
+
+    def redis_config
+      @redis_config ||= Sidekiq::LimitFetch.redis_retryable do
+        Sidekiq.redis { |it| it.client.options[:url] }
+      end
+    end
 
     def update_heartbeat(ttl)
       Sidekiq.redis do |it|
