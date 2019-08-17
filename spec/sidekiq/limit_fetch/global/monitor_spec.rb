@@ -4,7 +4,10 @@ RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
   let(:queue) { Sidekiq::Queue[name] }
   let(:name) { 'default' }
 
-  before { monitor }
+  before do
+      allow(described_class).to receive(:redis_config).and_return("redis://localhost:6379/0/sidekiq")
+      monitor
+  end
   after { monitor.kill }
 
   context 'old locks' do
