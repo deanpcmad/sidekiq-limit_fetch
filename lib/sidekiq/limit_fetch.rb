@@ -26,8 +26,14 @@ module Sidekiq::LimitFetch
     UnitOfWork.new(queue, job) if job
   end
 
+  # Backwards compatibility for sidekiq v6.1.0
+  # @see https://github.com/mperham/sidekiq/pull/4602
   def bulk_requeue(*args)
-    Sidekiq::BasicFetch.bulk_requeue(*args)
+    if Sidekiq::BasicFetch.respond_to?(:bulk_requeue) # < 6.1.0
+      Sidekiq::BasicFetch.bulk_requeue(*args)
+    else # 6.1.0+
+      Sidekiq::BasicFetch.new(Sidekiq.options).bulk_requeue(*args)
+    end
   end
 
   def redis_retryable
