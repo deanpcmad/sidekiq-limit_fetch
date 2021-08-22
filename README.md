@@ -146,6 +146,16 @@ To use this mode you need to specify a following line in sidekiq.yml:
   :dynamic: true
 ```
 
+or
+
+```yaml
+  :dynamic:
+    :exclude:
+      - excluded_queue
+```
+
+to exclude `excluded_queue` from dynamic queue
+
 Dynamic queues will be ran at the lowest priority.
 
 ### Maintenance

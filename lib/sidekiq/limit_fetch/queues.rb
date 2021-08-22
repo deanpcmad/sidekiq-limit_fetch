@@ -5,7 +5,16 @@ module Sidekiq::LimitFetch::Queues
 
   def start(options)
     @queues         = options[:queues]
-    @dynamic        = options[:dynamic]
+
+    # !{} == false #=> true
+    # !false == false #=> false
+    # !true == false #=> true
+    @dynamic         = !options.key?(:dynamic) == false
+    @dynamic_exclude = if options[:dynamic].is_a? Hash
+                         options.dig(:dynamic, :exclude) || []
+                       else
+                         []
+                       end
 
     @limits         = options[:limits] || {}
     @process_limits = options[:process_limits] || {}
@@ -35,6 +44,10 @@ module Sidekiq::LimitFetch::Queues
 
   def dynamic?
     @dynamic
+  end
+
+  def dynamic_exclude
+    @dynamic_exclude
   end
 
   def add(queues)

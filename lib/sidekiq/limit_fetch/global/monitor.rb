@@ -39,7 +39,10 @@ module Sidekiq::LimitFetch::Global
 
     def add_dynamic_queues
       queues = Sidekiq::LimitFetch::Queues
-      queues.add Sidekiq::Queue.all.map(&:name) if queues.dynamic?
+      available_queues = Sidekiq::Queue.all.map(&:name).reject do |it|
+        queues.dynamic_exclude.include? it
+      end
+      queues.add available_queues if queues.dynamic?
     end
 
     private
