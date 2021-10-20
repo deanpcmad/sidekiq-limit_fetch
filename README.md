@@ -24,7 +24,14 @@ Add this line to your application's Gemfile:
 ## Usage
 
 ### Require
-You must `require 'sidekiq-limit_fetch'` if it isn't already. It will not work until then.
+
+#### Rails
+
+Done! There is nothing to do for you.. Bundler already requires all gems inside your Gemfile
+
+#### Other
+
+You must somewhere in your application add `require 'sidekiq-limit_fetch'` otherwise it will no work.
 
 ### Limits
 
