@@ -1,12 +1,11 @@
 ## Description
 
-Sidekiq strategy to support a granular queue control –
-limiting, pausing, blocking, querying.
+*This project is currently being taken over by [@deanpcmad](https://github.com/deanpcmad) and will be updated soon*
 
-[![Build Status](https://secure.travis-ci.org/brainopia/sidekiq-limit_fetch.svg)](http://travis-ci.org/brainopia/sidekiq-limit_fetch)
+Sidekiq strategy to support a granular queue control – limiting, pausing, blocking, querying.
+
+[![CI](https://github.com/deanpcmad/sidekiq-limit_fetch/actions/workflows/ci.yml/badge.svg)](https://github.com/deanpcmad/sidekiq-limit_fetch/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/sidekiq-limit_fetch.svg)](http://badge.fury.io/rb/sidekiq-limit_fetch)
-[![Dependency Status](https://gemnasium.com/brainopia/sidekiq-limit_fetch.svg)](https://gemnasium.com/brainopia/sidekiq-limit_fetch)
-[![Code Climate](https://codeclimate.com/github/brainopia/sidekiq-limit_fetch.svg)](https://codeclimate.com/github/brainopia/sidekiq-limit_fetch)
 
 ## Installation
 
@@ -151,9 +150,3 @@ Dynamic queues will be ran at the lowest priority.
 ### Maintenance
 
 If you use ```flushdb```, restart the sidekiq process to re-populate the dynamic configuration.
-
-### Thanks
-
-<a href="https://evilmartians.com/?utm_source=sidekiq-limit_fetch">
-<img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg" alt="Sponsored by Evil Martians" width="236" height="54"></a>
- 
