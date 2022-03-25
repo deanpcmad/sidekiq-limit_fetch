@@ -5,6 +5,7 @@ module Sidekiq::LimitFetch::Queues
 
   def start(options)
     @queues         = options[:queues]
+    @startup_queues = options[:queues].dup
     @dynamic        = options[:dynamic]
 
     @limits         = options[:limits] || {}
@@ -37,15 +38,38 @@ module Sidekiq::LimitFetch::Queues
     @dynamic
   end
 
+  def startup_queue?(queue)
+    @startup_queues.include?(queue)
+  end
+
   def add(queues)
+    return unless queues
     queues.each do |queue|
       unless @queues.include? queue
-        apply_process_limit_to_queue(queue)
-        apply_limit_to_queue(queue)
+        if startup_queue?(queue)
+          apply_process_limit_to_queue(queue)
+          apply_limit_to_queue(queue)
+        end
 
         @queues.push queue
       end
     end
+  end
+
+  def remove(queues)
+    return unless queues
+    queues.each do |queue|
+      if @queues.include? queue
+        clear_limits_for_queue(queue)
+        @queues.delete queue
+        Sidekiq::Queue.delete_instance(queue)
+      end
+    end
+  end
+
+  def handle(queues)
+    add(queues - @queues)
+    remove(@queues - queues)
   end
 
   def strict_order!
@@ -106,6 +130,11 @@ module Sidekiq::LimitFetch::Queues
         Sidekiq::Queue[it].block
       end
     end
+  end
+
+  def clear_limits_for_queue(queue_name)
+    queue = Sidekiq::Queue[queue_name]
+    queue.clear_limits
   end
 
   def selector
