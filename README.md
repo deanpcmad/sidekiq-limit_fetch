@@ -7,7 +7,7 @@ Sidekiq strategy to support a granular queue control – limiting, pausing, bloc
 [![CI](https://github.com/deanpcmad/sidekiq-limit_fetch/actions/workflows/ci.yml/badge.svg)](https://github.com/deanpcmad/sidekiq-limit_fetch/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/sidekiq-limit_fetch.svg)](http://badge.fury.io/rb/sidekiq-limit_fetch)
 
-## Installation
+### Installation
 
 Add this line to your application's Gemfile:
 
@@ -20,17 +20,11 @@ Add this line to your application's Gemfile:
 - `sidekiq-rate-limiter`
 - any other plugin that rewrites fetch strategy of sidekiq.
 
-## Usage
+### Usage
 
-### Require
+If you are using this with Rails, you don't need to require it as it's done automatically.
 
-#### Rails
-
-Done! There is nothing to do for you.. Bundler already requires all gems inside your Gemfile
-
-#### Other
-
-You must somewhere in your application add `require 'sidekiq-limit_fetch'` otherwise it will no work.
+To use this Gem in other Ruby projects, just add `require 'sidekiq-limit_fetch'`.
 
 ### Limits
 
