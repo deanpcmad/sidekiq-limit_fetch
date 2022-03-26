@@ -35,6 +35,6 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: false
     - name: Install Appraisal dependencies
-      run: bundle exec appraisal ${{ matrix.appraisal }} bundle
+      run: bundle exec appraisal sidekiq-${{ matrix.appraisal }} bundle
     - name: Run tests
-      run: bundle exec appraisal ${{ matrix.appraisal }} bundle exec rake
+      run: bundle exec appraisal sidekiq-${{ matrix.appraisal }} bundle exec rake
