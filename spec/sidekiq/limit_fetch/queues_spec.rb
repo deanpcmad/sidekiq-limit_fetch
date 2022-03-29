@@ -15,61 +15,72 @@ RSpec.describe Sidekiq::LimitFetch::Queues do
 
   before { subject.start options }
 
+  def in_thread(&block)
+    thr = Thread.new(&block)
+    thr.join
+  end
+
   it 'should acquire queues' do
-    subject.acquire
+    in_thread { subject.acquire }
     expect(Sidekiq::Queue['queue1'].probed).to eq 1
     expect(Sidekiq::Queue['queue2'].probed).to eq 1
   end
 
   it 'should acquire dynamically blocking queues' do
-    subject.acquire
+    in_thread { subject.acquire }
     expect(Sidekiq::Queue['queue1'].probed).to eq 1
     expect(Sidekiq::Queue['queue2'].probed).to eq 1
 
     Sidekiq::Queue['queue1'].block
 
-    subject.acquire
+    in_thread { subject.acquire }
     expect(Sidekiq::Queue['queue1'].probed).to eq 2
     expect(Sidekiq::Queue['queue2'].probed).to eq 1
   end
 
   it 'should block except given queues' do
     Sidekiq::Queue['queue1'].block_except 'queue2'
-    subject.acquire
+    in_thread { subject.acquire }
     expect(Sidekiq::Queue['queue1'].probed).to eq 1
     expect(Sidekiq::Queue['queue2'].probed).to eq 1
 
     Sidekiq::Queue['queue1'].block_except 'queue404'
-    subject.acquire
+    in_thread { subject.acquire }
     expect(Sidekiq::Queue['queue1'].probed).to eq 2
     expect(Sidekiq::Queue['queue2'].probed).to eq 1
   end
 
   it 'should release queues' do
-    subject.acquire
-    subject.release_except nil
+    in_thread {
+      subject.acquire
+      subject.release_except nil
+    }
     expect(Sidekiq::Queue['queue1'].probed).to eq 0
     expect(Sidekiq::Queue['queue2'].probed).to eq 0
   end
 
   it 'should release queues except selected' do
-    subject.acquire
-    subject.release_except 'queue:queue1'
+    in_thread {
+      subject.acquire
+      subject.release_except 'queue:queue1'
+    }
     expect(Sidekiq::Queue['queue1'].probed).to eq 1
     expect(Sidekiq::Queue['queue2'].probed).to eq 0
   end
 
   it 'should release when no queues was acquired' do
     queues.each {|name| Sidekiq::Queue[name].pause }
-    subject.acquire
-    expect { subject.release_except nil }.not_to raise_exception
+    in_thread {
+      subject.acquire
+      expect { subject.release_except nil }.not_to raise_exception
+    }
   end
 
   context 'blocking' do
     let(:blocking) { %w(queue1) }
 
     it 'should acquire blocking queues' do
-      3.times { subject.acquire }
+      3.times { in_thread { subject.acquire  } }
       expect(Sidekiq::Queue['queue1'].probed).to eq 3
       expect(Sidekiq::Queue['queue2'].probed).to eq 1
     end
