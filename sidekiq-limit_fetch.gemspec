@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.homepage      = 'https://github.com/deanpcmad/sidekiq-limit_fetch'
   gem.description   = "Sidekiq strategy to restrict number of workers which are able to run specified queues simultaneously."
 
-  gem.metadata["homepage_uri"] = spec.homepage
+  gem.metadata["homepage_uri"] = gem.homepage
   gem.metadata["source_code_uri"] = "https://github.com/deanpcmad/sidekiq-limit_fetch"
   gem.metadata["changelog_uri"] = "https://github.com/deanpcmad/sidekiq-limit_fetch/blob/master/CHANGELOG.md"
 
