@@ -1,12 +1,16 @@
 Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-limit_fetch'
-  gem.version       = '4.0.0'
+  gem.version       = '4.1.0'
   gem.license       = 'MIT'
   gem.authors       = ['Dean Perry', 'brainopia']
   gem.email         = 'dean@deanpcmad.com'
   gem.summary       = 'Sidekiq strategy to support queue limits'
   gem.homepage      = 'https://github.com/deanpcmad/sidekiq-limit_fetch'
   gem.description   = "Sidekiq strategy to restrict number of workers which are able to run specified queues simultaneously."
+
+  gem.metadata["homepage_uri"] = spec.homepage
+  gem.metadata["source_code_uri"] = "https://github.com/deanpcmad/sidekiq-limit_fetch"
+  gem.metadata["changelog_uri"] = "https://github.com/deanpcmad/sidekiq-limit_fetch/blob/master/CHANGELOG.md"
 
   gem.files         = `git ls-files`.split($/)
   gem.test_files    = gem.files.grep %r{^spec/}
