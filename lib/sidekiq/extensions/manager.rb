@@ -6,7 +6,8 @@ class Sidekiq::Manager
     end
 
     def start
-      Sidekiq::LimitFetch::Queues.start options
+      # In sidekiq 6.5.0 the variable @options has been renamed to @config
+      Sidekiq::LimitFetch::Queues.start @options || @config
       Sidekiq::LimitFetch::Global::Monitor.start!
       super
     end
