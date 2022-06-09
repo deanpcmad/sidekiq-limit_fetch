@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-limit_fetch'
-  gem.version       = '4.1.0'
+  gem.version       = '4.2.0'
   gem.license       = 'MIT'
   gem.authors       = ['Dean Perry', 'brainopia']
   gem.email         = 'dean@deanpcmad.com'
