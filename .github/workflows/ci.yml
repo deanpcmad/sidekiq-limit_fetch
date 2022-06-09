@@ -14,8 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["2.6", "2.7", "3.0", "3.1"]
-        appraisal: ['5.0', '5.1', '5.2', '6.0', '6.1', '6.2', '6.3', '6.4', 'master']
+        ruby: ["2.7", "3.0", "3.1"]
+        appraisal: ['6.0', '6.1', '6.2', '6.3', '6.4', '6.5', 'master']
     services:
       redis:
         image: redis

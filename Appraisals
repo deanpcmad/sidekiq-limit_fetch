@@ -1,15 +1,3 @@
-appraise 'sidekiq-5.0' do
-  gem 'sidekiq', '~> 5.0.0'
-end
-
-appraise 'sidekiq-5.1' do
-  gem 'sidekiq', '~> 5.1.0'
-end
-
-appraise 'sidekiq-5.2' do
-  gem 'sidekiq', '~> 5.2.0'
-end
-
 appraise 'sidekiq-6.0' do
   gem 'sidekiq', '~> 6.0.0'
 end
@@ -28,6 +16,10 @@ end
 
 appraise 'sidekiq-6.4' do
   gem 'sidekiq', '~> 6.4.0'
+end
+
+appraise 'sidekiq-6.5' do
+  gem 'sidekiq', '~> 6.5.0'
 end
 
 appraise 'sidekiq-master' do

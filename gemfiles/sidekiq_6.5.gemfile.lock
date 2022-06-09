@@ -14,9 +14,7 @@ GEM
       thor (>= 0.14.0)
     connection_pool (2.2.5)
     diff-lcs (1.5.0)
-    rack (2.0.9.1)
-    rack-protection (2.2.0)
-      rack
+    rack (2.2.3.1)
     rake (13.0.6)
     redis (4.6.0)
     redis-namespace (1.8.2)
@@ -34,11 +32,10 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
-    sidekiq (5.2.8)
-      connection_pool (~> 2.2, >= 2.2.2)
-      rack (< 2.1.0)
-      rack-protection (>= 1.5.0)
-      redis (>= 3.3.5, < 5)
+    sidekiq (6.5.0)
+      connection_pool (>= 2.2.2)
+      rack (~> 2.0)
+      redis (>= 4.2.0)
     thor (1.2.1)
 
 PLATFORMS
@@ -49,8 +46,8 @@ DEPENDENCIES
   rake
   redis-namespace (~> 1.5, >= 1.5.2)
   rspec
-  sidekiq (~> 5.2.0)
+  sidekiq (~> 6.5.0)
   sidekiq-limit_fetch!
 
 BUNDLED WITH
-   2.3.14
+   2.3.5
