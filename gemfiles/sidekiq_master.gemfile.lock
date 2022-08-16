@@ -10,7 +10,7 @@ GIT
 PATH
   remote: ..
   specs:
-    sidekiq-limit_fetch (4.1.0)
+    sidekiq-limit_fetch (4.3.0)
       redis (>= 4.6.0)
       sidekiq (>= 4)
 
@@ -55,4 +55,4 @@ DEPENDENCIES
   sidekiq-limit_fetch!
 
 BUNDLED WITH
-   2.3.14
+   2.3.5
