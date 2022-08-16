@@ -28,13 +28,18 @@ module Sidekiq::LimitFetch
     UnitOfWork.new(queue, job) if job
   end
 
+  def config
+    # Post 6.5, Sidekiq.options is deprecated and replaced with passing Sidekiq directly
+    post_6_5? ? Sidekiq : Sidekiq.options
+  end
+
   # Backwards compatibility for sidekiq v6.1.0
   # @see https://github.com/mperham/sidekiq/pull/4602
   def bulk_requeue(*args)
     if Sidekiq::BasicFetch.respond_to?(:bulk_requeue) # < 6.1.0
       Sidekiq::BasicFetch.bulk_requeue(*args)
     else # 6.1.0+
-      Sidekiq::BasicFetch.new(Sidekiq.options).bulk_requeue(*args)
+      Sidekiq::BasicFetch.new(config).bulk_requeue(*args)
     end
   end
 
@@ -55,6 +60,10 @@ module Sidekiq::LimitFetch
   end
 
   private
+
+  def post_6_5?
+    @post_6_5 ||= Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('6.5.0')
+  end
 
   def redis_brpop(queues)
     if queues.empty?
