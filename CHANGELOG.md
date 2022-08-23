@@ -1,5 +1,7 @@
 # Changelog
 
+- #137 - Fix deprecation of passing timeout as positional argument to brpop
+
 ## [4.3.0] - 2022-08-16
 
 - #135 - Some extra fixes for Sidekiq 6.5 (fixes #128, #130, #131) from [@BobbyMcWho](https://github.com/BobbyMcWho)

@@ -70,7 +70,7 @@ module Sidekiq::LimitFetch
       sleep TIMEOUT  # there are no queues to handle, so lets sleep
       []             # and return nothing
     else
-      redis_retryable { Sidekiq.redis { |it| it.brpop *queues, TIMEOUT } }
+      redis_retryable { Sidekiq.redis { |it| it.brpop *queues, timeout: TIMEOUT } }
     end
   end
 end
