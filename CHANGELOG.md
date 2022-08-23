@@ -1,6 +1,8 @@
 # Changelog
 
-- #137 - Fix deprecation of passing timeout as positional argument to brpop
+## [4.3.1] - 2022-08-23
+
+- #137 - Fix deprecation of passing timeout as positional argument to brpop from [@cgunther](https://github.com/cgunther)
 
 ## [4.3.0] - 2022-08-16
 
