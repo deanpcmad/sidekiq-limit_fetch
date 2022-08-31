@@ -33,7 +33,7 @@ module Sidekiq::LimitFetch::Global
 
     def remove_old_processes!
       Sidekiq.redis do |it|
-        old_processes.each {|process| it.srem PROCESS_SET, process }
+        old_processes.each {|process| it.srem PROCESS_SET, [process] }
       end
     end
 
@@ -48,7 +48,7 @@ module Sidekiq::LimitFetch::Global
       Sidekiq.redis do |it|
         it.multi do |pipeline|
           pipeline.set heartbeat_key, true
-          pipeline.sadd PROCESS_SET, Selector.uuid
+          pipeline.sadd PROCESS_SET, [Selector.uuid]
           pipeline.expire heartbeat_key, ttl
         end
       end
