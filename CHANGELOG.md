@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.3.2] - 2022-09-01
+
+- #139 - Fix Redis deprecation warnings from [@adamzapasnik](https://github.com/adamzapasnik)
+
 ## [4.3.1] - 2022-08-23
 
 - #137 - Fix deprecation of passing timeout as positional argument to brpop from [@cgunther](https://github.com/cgunther)

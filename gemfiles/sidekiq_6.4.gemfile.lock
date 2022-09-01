@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    sidekiq-limit_fetch (4.3.1)
+    sidekiq-limit_fetch (4.3.2)
       redis (>= 4.6.0)
       sidekiq (>= 4)
 
@@ -50,4 +50,4 @@ DEPENDENCIES
   sidekiq-limit_fetch!
 
 BUNDLED WITH
-   2.3.5
+   2.3.21
