@@ -34,11 +34,11 @@ module Sidekiq::LimitFetch::Global
     end
 
     def redis_acquire_sha
-      @acquire_sha ||= Digest::SHA1.hexdigest redis_acquire_script
+      @acquire_sha ||= OpenSSL::Digest::SHA1.hexdigest redis_acquire_script
     end
 
     def redis_release_sha
-      @release_sha ||= Digest::SHA1.hexdigest redis_release_script
+      @release_sha ||= OpenSSL::Digest::SHA1.hexdigest redis_release_script
     end
 
     def redis_acquire_script
