@@ -1,0 +1,58 @@
+PATH
+  remote: ..
+  specs:
+    sidekiq-limit_fetch (4.3.2)
+      redis (>= 4.6.0)
+      sidekiq (>= 4)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    appraisal (2.4.1)
+      bundler
+      rake
+      thor (>= 0.14.0)
+    concurrent-ruby (1.1.10)
+    connection_pool (2.3.0)
+    diff-lcs (1.5.0)
+    rack (3.0.0)
+    rake (13.0.6)
+    redis (5.0.5)
+      redis-client (>= 0.9.0)
+    redis-client (0.11.0)
+      connection_pool
+    redis-namespace (1.9.0)
+      redis (>= 4)
+    rspec (3.12.0)
+      rspec-core (~> 3.12.0)
+      rspec-expectations (~> 3.12.0)
+      rspec-mocks (~> 3.12.0)
+    rspec-core (3.12.0)
+      rspec-support (~> 3.12.0)
+    rspec-expectations (3.12.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.12.0)
+    rspec-mocks (3.12.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.12.0)
+    rspec-support (3.12.0)
+    sidekiq (7.0.0)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.9.0)
+    thor (1.2.1)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  appraisal
+  rake
+  redis-namespace (~> 1.5, >= 1.5.2)
+  rspec
+  sidekiq (~> 7.0.0)
+  sidekiq-limit_fetch!
+
+BUNDLED WITH
+   2.3.6
