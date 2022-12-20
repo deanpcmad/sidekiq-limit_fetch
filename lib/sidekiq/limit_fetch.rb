@@ -22,10 +22,15 @@ module Sidekiq::LimitFetch
     @post_7 ||= Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('7.0.0')
   end
 
+  def post_6_5?
+    @post_6_5 ||= Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('6.5.0')
+  end
+
   RedisBaseConnectionError = post_7? ? RedisClient::ConnectionError : Redis::BaseConnectionError
   RedisCommandError = post_7? ? RedisClient::CommandError : Redis::CommandError
 
-  def new(_)
+  def new(capsule)
+    @config = capsule if post_7?
     self
   end
 
@@ -36,8 +41,14 @@ module Sidekiq::LimitFetch
   end
 
   def config
-    # Post 6.5, Sidekiq.options is deprecated and replaced with passing Sidekiq directly
-    post_6_5? ? Sidekiq : Sidekiq.options
+    if post_7?
+      @config
+    elsif post_6_5?
+      Sidekiq
+    else
+      # Pre 6.5, Sidekiq.options is deprecated and replaced with passing Sidekiq directly
+      Sidekiq.options
+    end
   end
 
   # Backwards compatibility for sidekiq v6.1.0
@@ -64,12 +75,6 @@ module Sidekiq::LimitFetch
     else
       raise
     end
-  end
-
-  private
-
-  def post_6_5?
-    @post_6_5 ||= Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('6.5.0')
   end
 
   def redis_brpop(queues)

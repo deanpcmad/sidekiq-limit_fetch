@@ -13,7 +13,21 @@ RSpec.describe Sidekiq::LimitFetch::Queues do
       process_limits: process_limits }
   end
 
-  before { subject.start options }
+  let(:config) { Sidekiq::Config.new(options) }
+  let(:capsule) do
+    config.capsule("default") do |cap|
+      cap.concurrency = 1
+      cap.queues = config[:queues]
+    end
+  end
+
+  let(:capsule_or_options) do
+    Sidekiq::LimitFetch.post_7? ? capsule : options
+  end
+
+  before do
+    subject.start capsule_or_options
+  end
 
   def in_thread(&block)
     thr = Thread.new(&block)

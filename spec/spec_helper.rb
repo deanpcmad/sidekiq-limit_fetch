@@ -6,7 +6,6 @@ if Sidekiq::LimitFetch.post_7?
   end
 else
   Sidekiq.logger = nil
-  Sidekiq.redis = { namespace: ENV['namespace'] }
 end
 
 RSpec.configure do |config|

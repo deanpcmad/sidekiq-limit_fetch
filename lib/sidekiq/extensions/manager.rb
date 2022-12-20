@@ -1,7 +1,11 @@
 class Sidekiq::Manager
   module InitLimitFetch
-    def initialize(options={})
-      options[:fetch] = Sidekiq::LimitFetch
+    def initialize(capsule_or_options)
+      if Sidekiq::LimitFetch.post_7?
+        capsule_or_options.config[:fetch_class] = Sidekiq::LimitFetch
+      else
+        capsule_or_options[:fetch]= Sidekiq::LimitFetch
+      end
       super
     end
 
