@@ -18,6 +18,13 @@ module Sidekiq::LimitFetch
 
   extend self
 
+  def post_7?
+    @post_7 ||= Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('7.0.0')
+  end
+
+  RedisBaseConnectionError = post_7? ? RedisClient::ConnectionError : Redis::BaseConnectionError
+  RedisCommandError = post_7? ? RedisClient::CommandError : Redis::CommandError
+
   def new(_)
     self
   end
@@ -45,10 +52,10 @@ module Sidekiq::LimitFetch
 
   def redis_retryable
     yield
-  rescue Redis::BaseConnectionError
+  rescue RedisBaseConnectionError
     sleep TIMEOUT
     retry
-  rescue Redis::CommandError => error
+  rescue RedisCommandError => error
     # If Redis was restarted and is still loading its snapshot,
     # then we should treat this as a temporary connection error too.
     if error.message =~ /^LOADING/
@@ -70,7 +77,15 @@ module Sidekiq::LimitFetch
       sleep TIMEOUT  # there are no queues to handle, so lets sleep
       []             # and return nothing
     else
-      redis_retryable { Sidekiq.redis { |it| it.brpop *queues, timeout: TIMEOUT } }
+      redis_retryable do
+        Sidekiq.redis do |it|
+          if post_7?
+            it.blocking_call(false, "brpop", *queues, TIMEOUT)
+          else
+            it.brpop(*queues, timeout: TIMEOUT)
+          end
+        end
+      end
     end
   end
 end

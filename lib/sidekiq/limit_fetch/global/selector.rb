@@ -25,10 +25,14 @@ module Sidekiq::LimitFetch::Global
     def redis_eval(script_name, args)
       Sidekiq.redis do |it|
         begin
-          it.evalsha send("redis_#{script_name}_sha"), argv: args
-        rescue Redis::CommandError => error
+          it.evalsha send("redis_#{script_name}_sha"), [], args
+        rescue Sidekiq::LimitFetch::RedisCommandError => error
           raise unless error.message.include? 'NOSCRIPT'
-          it.eval send("redis_#{script_name}_script"), argv: args
+          if Sidekiq::LimitFetch.post_7?
+            it.eval send("redis_#{script_name}_script"), 0, *args
+          else
+            it.eval send("redis_#{script_name}_script"), argv: args
+          end
         end
       end
     end

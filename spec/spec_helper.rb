@@ -1,7 +1,13 @@
 require 'sidekiq/limit_fetch'
 
-Sidekiq.logger = nil
-Sidekiq.redis = { namespace: ENV['namespace'] }
+if Sidekiq::LimitFetch.post_7?
+  Sidekiq.configure_embed do |config|
+    config.logger = nil
+  end
+else
+  Sidekiq.logger = nil
+  Sidekiq.redis = { namespace: ENV['namespace'] }
+end
 
 RSpec.configure do |config|
   config.order = :random

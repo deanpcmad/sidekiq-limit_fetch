@@ -2,7 +2,6 @@ PATH
   remote: ..
   specs:
     sidekiq-limit_fetch (4.3.2)
-      redis (>= 4.6.0)
       sidekiq (>= 4)
 
 GEM
