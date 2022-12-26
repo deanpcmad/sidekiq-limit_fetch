@@ -77,11 +77,11 @@ module Sidekiq::LimitFetch::Global
     end
 
     def pause
-      redis {|it| it.set "#{PREFIX}:pause:#@name", true }
+      redis {|it| it.set "#{PREFIX}:pause:#@name", '1' }
     end
 
     def pause_for_ms ms
-      redis {|it| it.psetex "#{PREFIX}:pause:#@name", ms, true }
+      redis {|it| it.psetex "#{PREFIX}:pause:#@name", ms, 1 }
     end
 
     def unpause
@@ -89,11 +89,11 @@ module Sidekiq::LimitFetch::Global
     end
 
     def paused?
-      redis {|it| it.get "#{PREFIX}:pause:#@name" }
+      redis {|it| it.get "#{PREFIX}:pause:#@name" } == '1'
     end
 
     def block
-      redis {|it| it.set "#{PREFIX}:block:#@name", true }
+      redis {|it| it.set "#{PREFIX}:block:#@name", '1' }
     end
 
     def block_except(*queues)
@@ -106,7 +106,7 @@ module Sidekiq::LimitFetch::Global
     end
 
     def blocking?
-      redis {|it| it.get "#{PREFIX}:block:#@name" }
+      redis {|it| it.get "#{PREFIX}:block:#@name" } == '1'
     end
 
     def clear_limits

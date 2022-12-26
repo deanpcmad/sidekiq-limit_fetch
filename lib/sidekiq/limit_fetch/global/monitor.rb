@@ -27,7 +27,7 @@ module Sidekiq::LimitFetch::Global
 
     def old_processes
       all_processes.reject do |process|
-        Sidekiq.redis {|it| it.get heartbeat_key process }
+        Sidekiq.redis {|it| it.get heartbeat_key process } == '1'
       end
     end
 
@@ -47,7 +47,7 @@ module Sidekiq::LimitFetch::Global
     def update_heartbeat(ttl)
       Sidekiq.redis do |it|
         it.multi do |pipeline|
-          pipeline.set heartbeat_key, true
+          pipeline.set heartbeat_key, '1'
           pipeline.sadd PROCESS_SET, [Selector.uuid]
           pipeline.expire heartbeat_key, ttl
         end
