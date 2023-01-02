@@ -4,22 +4,26 @@ module Sidekiq::LimitFetch::Queues
   THREAD_KEY = :acquired_queues
 
   def start(options)
-    @queues         = options.config[:queues]
-    @startup_queues = options.config[:queues].dup
+    if Sidekiq::LimitFetch.post_7?
+      options = options.config
+    end
 
-    if options.config[:dynamic].is_a? Hash
+    @queues         = options[:queues]
+    @startup_queues = options[:queues].dup
+
+    if options[:dynamic].is_a? Hash
       @dynamic         = true
-      @dynamic_exclude = options.config[:dynamic][:exclude] || []
+      @dynamic_exclude = options[:dynamic][:exclude] || []
     else
-      @dynamic = options.config[:dynamic]
+      @dynamic = options[:dynamic]
       @dynamic_exclude = []
     end
 
-    @limits         = options.config[:limits] || {}
-    @process_limits = options.config[:process_limits] || {}
-    @blocks         = options.config[:blocking] || []
+    @limits         = options[:limits] || {}
+    @process_limits = options[:process_limits] || {}
+    @blocks         = options[:blocking] || []
 
-    options.config[:strict] ? strict_order! : weighted_order!
+    options[:strict] ? strict_order! : weighted_order!
 
     apply_process_limit_to_queues
     apply_limit_to_queues
