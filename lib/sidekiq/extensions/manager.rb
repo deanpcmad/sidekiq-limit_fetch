@@ -1,7 +1,7 @@
 class Sidekiq::Manager
   module InitLimitFetch
     def initialize(options={})
-      options[:fetch] = Sidekiq::LimitFetch
+      options.config[:fetch] = Sidekiq::LimitFetch
       super
     end
 
