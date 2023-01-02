@@ -39,7 +39,12 @@ module Sidekiq::LimitFetch::Global
 
     def handle_dynamic_queues
       queues = Sidekiq::LimitFetch::Queues
-      queues.handle Sidekiq::Queue.all.map(&:name) if queues.dynamic?
+      return unless queues.dynamic?
+
+      available_queues = Sidekiq::Queue.all.map(&:name).reject do |it|
+        queues.dynamic_exclude.include? it
+      end
+      queues.handle available_queues
     end
 
     private
