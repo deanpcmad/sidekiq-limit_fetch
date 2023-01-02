@@ -1,6 +1,6 @@
 ## Description
 
-*This project has been taken over by [@deanpcmad](https://github.com/deanpcmad)*
+*This project has been taken over by [@deanpcmad](https://github.com/deanpcmad). Original code by [@brainopia](https://github.com/brainopia).*
 
 Sidekiq strategy to support a granular queue control – limiting, pausing, blocking, querying.
 

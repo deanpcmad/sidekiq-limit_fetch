@@ -1,8 +1,8 @@
 PATH
   remote: ..
   specs:
-    sidekiq-limit_fetch (4.3.2)
-      sidekiq (>= 4)
+    sidekiq-limit_fetch (4.4.0)
+      sidekiq (>= 6)
 
 GEM
   remote: https://rubygems.org/
@@ -52,4 +52,4 @@ DEPENDENCIES
   sidekiq-limit_fetch!
 
 BUNDLED WITH
-   2.3.21
+   2.3.5

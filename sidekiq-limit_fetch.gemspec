@@ -1,8 +1,8 @@
 Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-limit_fetch'
-  gem.version       = '4.3.2'
+  gem.version       = '4.4.0'
   gem.license       = 'MIT'
-  gem.authors       = ['Dean Perry', 'brainopia']
+  gem.authors       = ['Dean Perry']
   gem.email         = 'dean@deanpcmad.com'
   gem.summary       = 'Sidekiq strategy to support queue limits'
   gem.homepage      = 'https://github.com/deanpcmad/sidekiq-limit_fetch'
@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep %r{^spec/}
   gem.require_paths = %w(lib)
 
-  gem.add_dependency 'sidekiq', '>= 4'
+  gem.add_dependency 'sidekiq', '>= 6'
   gem.add_development_dependency 'redis-namespace', '~> 1.5', '>= 1.5.2'
   gem.add_development_dependency 'appraisal'
   gem.add_development_dependency 'rspec'

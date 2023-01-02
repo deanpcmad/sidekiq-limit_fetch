@@ -1,9 +1,8 @@
 PATH
   remote: ..
   specs:
-    sidekiq-limit_fetch (4.3.2)
-      redis-client
-      sidekiq (>= 7)
+    sidekiq-limit_fetch (4.4.0)
+      sidekiq (>= 6)
 
 GEM
   remote: https://rubygems.org/
@@ -17,8 +16,12 @@ GEM
     diff-lcs (1.5.0)
     rack (3.0.2)
     rake (13.0.6)
+    redis (5.0.5)
+      redis-client (>= 0.9.0)
     redis-client (0.11.2)
       connection_pool
+    redis-namespace (1.10.0)
+      redis (>= 4)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
@@ -41,10 +44,12 @@ GEM
 
 PLATFORMS
   x86_64-darwin-21
+  x86_64-linux
 
 DEPENDENCIES
   appraisal
   rake
+  redis-namespace (~> 1.5, >= 1.5.2)
   rspec
   sidekiq (~> 7.0.0)
   sidekiq-limit_fetch!
