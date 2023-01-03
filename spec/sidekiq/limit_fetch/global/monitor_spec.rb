@@ -41,46 +41,72 @@ RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
     end
     let(:queues) { %w[queue1 queue2] }
     let(:queue) { Sidekiq::LimitFetch::Queues }
-    let(:options) do
-      {
-        limits: limits,
-        queues: queues,
-      }
-    end
 
-    it 'should add dynamic queue' do
-      queue.start(options.merge({ dynamic: true }))
-      monitor
-
-      expect(queue.instance_variable_get(:@queues)).not_to include('queue3')
-
-      Sidekiq.redis do |it|
-        it.sadd 'queues', 'queue3'
-      end
-
-      sleep 2*ttl
-      expect(queue.instance_variable_get(:@queues)).to include('queue3')
-
-      Sidekiq.redis do |it|
-        it.srem 'queues', 'queue3'
+    let(:config) { Sidekiq::Config.new(options) }
+    let(:capsule) do
+      config.capsule("default") do |cap|
+        cap.concurrency = 1
+        cap.queues = config[:queues]
       end
     end
 
-    it 'should exclude excluded dynamic queue' do
-      queue.start(options.merge({ dynamic: { exclude: ['queue4'] } }))
-      monitor
+    let(:capsule_or_options) do
+      Sidekiq::LimitFetch.post_7? ? capsule : options
+    end
 
-      expect(queue.instance_variable_get(:@queues)).not_to include('queue4')
-
-      Sidekiq.redis do |it|
-        it.sadd 'queues', 'queue4'
+    context "without excluded queue" do
+      let(:options) do
+        {
+          limits: limits,
+          queues: queues,
+          dynamic: true
+        }
       end
 
-      sleep 2*ttl
-      expect(queue.instance_variable_get(:@queues)).not_to include('queue4')
+      it 'should add dynamic queue' do
+        queue.start(capsule_or_options)
+        monitor
 
-      Sidekiq.redis do |it|
-        it.srem 'queues', 'queue4'
+        expect(queue.instance_variable_get(:@queues)).not_to include('queue3')
+
+        Sidekiq.redis do |it|
+          it.sadd 'queues', 'queue3'
+        end
+
+        sleep 2*ttl
+        expect(queue.instance_variable_get(:@queues)).to include('queue3')
+
+        Sidekiq.redis do |it|
+          it.srem 'queues', 'queue3'
+        end
+      end
+    end
+
+    context "with excluded queue" do
+      let(:options) do
+        {
+          limits: limits,
+          queues: queues,
+          dynamic: { exclude: ['queue4'] }
+        }
+      end
+
+      it 'should exclude excluded dynamic queue' do
+        queue.start(capsule_or_options)
+        monitor
+
+        expect(queue.instance_variable_get(:@queues)).not_to include('queue4')
+
+        Sidekiq.redis do |it|
+          it.sadd 'queues', 'queue4'
+        end
+
+        sleep 2*ttl
+        expect(queue.instance_variable_get(:@queues)).not_to include('queue4')
+
+        Sidekiq.redis do |it|
+          it.srem 'queues', 'queue4'
+        end
       end
     end
   end

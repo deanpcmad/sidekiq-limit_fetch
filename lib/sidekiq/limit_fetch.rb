@@ -22,6 +22,10 @@ module Sidekiq::LimitFetch
     @post_7 ||= Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('7.0.0')
   end
 
+  def post_6_5?
+    @post_6_5 ||= Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('6.5.0')
+  end
+
   RedisBaseConnectionError = post_7? ? RedisClient::ConnectionError : Redis::BaseConnectionError
   RedisCommandError = post_7? ? RedisClient::CommandError : Redis::CommandError
 
@@ -67,10 +71,6 @@ module Sidekiq::LimitFetch
   end
 
   private
-
-  def post_6_5?
-    @post_6_5 ||= Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('6.5.0')
-  end
 
   def redis_brpop(queues)
     if queues.empty?
