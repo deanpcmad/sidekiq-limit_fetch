@@ -1,3 +1,6 @@
+require 'simplecov'
+SimpleCov.start
+
 require 'sidekiq/limit_fetch'
 
 if Sidekiq::LimitFetch.post_7?
