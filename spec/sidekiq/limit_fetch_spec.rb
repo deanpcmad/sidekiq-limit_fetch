@@ -4,9 +4,17 @@ RSpec.describe Sidekiq::LimitFetch do
   let(:options) {{ queues: queues, limits: limits }}
   let(:queues) { %w(queue1 queue1 queue2 queue2) }
   let(:limits) {{ 'queue1' => 1, 'queue2' => 2 }}
+  let(:config) { Sidekiq::Config.new(options) }
+  let(:capsule) do
+    config.capsule("default") do |cap|
+      cap.concurrency = 1
+      cap.queues = config[:queues]
+    end
+  end
+  let(:capsule_or_config) { Sidekiq::LimitFetch.post_7? ? capsule : options }
 
   before do
-    subject::Queues.start options
+    subject::Queues.start(capsule_or_config)
 
     Sidekiq.redis do |it|
       it.del 'queue:queue1'

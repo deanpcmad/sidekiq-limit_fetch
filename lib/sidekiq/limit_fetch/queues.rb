@@ -3,27 +3,25 @@ module Sidekiq::LimitFetch::Queues
 
   THREAD_KEY = :acquired_queues
 
-  def start(options)
-    if Sidekiq::LimitFetch.post_7?
-      options = options.config
-    end
+  def start(capsule_or_options)
+    config = Sidekiq::LimitFetch.post_7? ? capsule_or_options.config : capsule_or_options
 
-    @queues         = options[:queues]
-    @startup_queues = options[:queues].dup
+    @queues         = config[:queues]
+    @startup_queues = config[:queues].dup
 
-    if options[:dynamic].is_a? Hash
+    if config[:dynamic].is_a? Hash
       @dynamic         = true
-      @dynamic_exclude = options[:dynamic][:exclude] || []
+      @dynamic_exclude = config[:dynamic][:exclude] || []
     else
-      @dynamic = options[:dynamic]
+      @dynamic = config[:dynamic]
       @dynamic_exclude = []
     end
 
-    @limits         = options[:limits] || {}
-    @process_limits = options[:process_limits] || {}
-    @blocks         = options[:blocking] || []
+    @limits         = config[:limits] || {}
+    @process_limits = config[:process_limits] || {}
+    @blocks         = config[:blocking] || []
 
-    options[:strict] ? strict_order! : weighted_order!
+    config[:strict] ? strict_order! : weighted_order!
 
     apply_process_limit_to_queues
     apply_limit_to_queues
