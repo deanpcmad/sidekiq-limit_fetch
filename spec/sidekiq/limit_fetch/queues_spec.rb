@@ -1,21 +1,23 @@
+# frozen_string_literal: true
+
 RSpec.describe Sidekiq::LimitFetch::Queues do
   let(:queues)         { %w[queue1 queue2] }
-  let(:limits)         {{ 'queue1' => 3 }}
+  let(:limits)         { { 'queue1' => 3 } }
   let(:strict)         { true }
-  let(:blocking)       {}
-  let(:process_limits) {{ 'queue2' => 3 }}
+  let(:blocking)       { nil }
+  let(:process_limits) { { 'queue2' => 3 } }
 
   let(:options) do
-    { queues:   queues,
-      limits:   limits,
-      strict:   strict,
+    { queues: queues,
+      limits: limits,
+      strict: strict,
       blocking: blocking,
       process_limits: process_limits }
   end
 
   let(:config) { Sidekiq::Config.new(options) }
   let(:capsule) do
-    config.capsule("default") do |cap|
+    config.capsule('default') do |cap|
       cap.concurrency = 1
       cap.queues = config[:queues]
     end
@@ -65,36 +67,36 @@ RSpec.describe Sidekiq::LimitFetch::Queues do
   end
 
   it 'should release queues' do
-    in_thread {
+    in_thread do
       subject.acquire
       subject.release_except nil
-    }
+    end
     expect(Sidekiq::Queue['queue1'].probed).to eq 0
     expect(Sidekiq::Queue['queue2'].probed).to eq 0
   end
 
   it 'should release queues except selected' do
-    in_thread {
+    in_thread do
       subject.acquire
       subject.release_except 'queue:queue1'
-    }
+    end
     expect(Sidekiq::Queue['queue1'].probed).to eq 1
     expect(Sidekiq::Queue['queue2'].probed).to eq 0
   end
 
   it 'should release when no queues was acquired' do
-    queues.each {|name| Sidekiq::Queue[name].pause }
-    in_thread {
+    queues.each { |name| Sidekiq::Queue[name].pause }
+    in_thread do
       subject.acquire
       expect { subject.release_except nil }.not_to raise_exception
-    }
+    end
   end
 
   context 'blocking' do
-    let(:blocking) { %w(queue1) }
+    let(:blocking) { %w[queue1] }
 
     it 'should acquire blocking queues' do
-      3.times { in_thread { subject.acquire  } }
+      3.times { in_thread { subject.acquire } }
       expect(Sidekiq::Queue['queue1'].probed).to eq 3
       expect(Sidekiq::Queue['queue2'].probed).to eq 1
     end
@@ -115,11 +117,11 @@ RSpec.describe Sidekiq::LimitFetch::Queues do
     let(:strict) { false }
 
     it 'should retrieve weighted queues' do
-      expect(subject.ordered_queues).to match_array(%w(queue1 queue2))
+      expect(subject.ordered_queues).to match_array(%w[queue1 queue2])
     end
   end
 
   it 'with strict flag should retrieve strictly ordered queues' do
-    expect(subject.ordered_queues).to eq %w(queue1 queue2)
+    expect(subject.ordered_queues).to eq %w[queue1 queue2]
   end
 end

@@ -1,0 +1,29 @@
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 2.7
+  Exclude:
+    - 'gemfiles/*'
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*.rb'
+    - 'demo/Rakefile'
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'lib/sidekiq/limit_fetch/queues.rb'
+
+Metrics/ClassLength:
+  Exclude:
+    - 'lib/sidekiq/limit_fetch/global/semaphore.rb'
+
+Naming/VariableNumber:
+  EnforcedStyle: snake_case
+
+Naming/FileName:
+  Exclude:
+    - lib/sidekiq-limit_fetch.rb

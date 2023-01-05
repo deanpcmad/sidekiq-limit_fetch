@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CWorker
   include Sidekiq::Worker
   sidekiq_options queue: :c
@@ -6,4 +8,3 @@ class CWorker
     sleep 10
   end
 end
-

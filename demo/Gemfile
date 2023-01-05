@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
-gem 'rails'
 gem 'launchy'
+gem 'rails'
 gem 'sidekiq', github: 'mperham/sidekiq'
 gem 'sidekiq-limit_fetch', path: '..'
-

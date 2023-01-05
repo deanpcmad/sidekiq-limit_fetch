@@ -1,23 +1,29 @@
-module Sidekiq::LimitFetch::Instances
-  def self.extended(klass)
-    klass.instance_variable_set :@instances, {}
-  end
+# frozen_string_literal: true
 
-  def new(*args)
-    @instances[args] ||= super
-  end
+module Sidekiq
+  module LimitFetch
+    module Instances
+      def self.extended(klass)
+        klass.instance_variable_set :@instances, {}
+      end
 
-  alias [] new
+      def new(*args)
+        @instances[args] ||= super
+      end
 
-  def instances
-    @instances.values
-  end
+      alias [] new
 
-  def reset_instances!
-    @instances = {}
-  end
+      def instances
+        @instances.values
+      end
 
-  def delete_instance(name)
-    @instances.delete [name]
+      def reset_instances!
+        @instances = {}
+      end
+
+      def delete_instance(name)
+        @instances.delete [name]
+      end
+    end
   end
 end

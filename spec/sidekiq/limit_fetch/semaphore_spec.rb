@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'semaphore' do
   let(:name) { 'default' }
   subject { Sidekiq::LimitFetch::Global::Semaphore.new name }

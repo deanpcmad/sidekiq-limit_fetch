@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 Thread.abort_on_exception = true
 
 RSpec.describe Sidekiq::LimitFetch do
-  let(:options) {{ queues: queues, limits: limits }}
-  let(:queues) { %w(queue1 queue1 queue2 queue2) }
-  let(:limits) {{ 'queue1' => 1, 'queue2' => 2 }}
+  let(:options) { { queues: queues, limits: limits } }
+  let(:queues) { %w[queue1 queue1 queue2 queue2] }
+  let(:limits) { { 'queue1' => 1, 'queue2' => 2 } }
   let(:config) { Sidekiq::Config.new(options) }
   let(:capsule) do
-    config.capsule("default") do |cap|
+    config.capsule('default') do |cap|
       cap.concurrency = 1
       cap.queues = config[:queues]
     end

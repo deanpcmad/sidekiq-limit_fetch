@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Sidekiq::Manager do
   let(:capsule_or_options) do
     if Sidekiq::LimitFetch.post_7?

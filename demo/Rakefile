@@ -1,4 +1,6 @@
-require File.expand_path('../config/application', __FILE__)
+# frozen_string_literal: true
+
+require File.expand_path('config/application', __dir__)
 Demo::Application.load_tasks
 
 namespace :demo do
@@ -63,7 +65,7 @@ namespace :demo do
   end
   def with_sidekiq_config(config)
     whitespace_offset = config[/\A */].size
-    config.gsub! /^ {#{whitespace_offset}}/, ''
+    config.gsub!(/^ {#{whitespace_offset}}/, '')
 
     puts "=> Use sidekiq config:\n#{config}"
     File.write 'config/sidekiq.yml', config
@@ -85,8 +87,8 @@ namespace :demo do
     require 'sidekiq/cli'
     cli = Sidekiq::CLI.instance
 
-    %w(validate! boot_system).each do |stub|
-      cli.define_singleton_method(stub) {}
+    %w[validate! boot_system].each do |stub|
+      cli.define_singleton_method(stub) {} # rubocop:disable Lint/EmptyBlock
     end
 
     with_sidekiq_config options[:config] do
@@ -96,4 +98,3 @@ namespace :demo do
     cli.run
   end
 end
-
