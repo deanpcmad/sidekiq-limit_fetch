@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SlowWorker
   include Sidekiq::Worker
   sidekiq_options queue: :slow

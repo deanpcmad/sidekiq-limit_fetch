@@ -36,6 +36,8 @@ jobs:
         bundler-cache: false
     - name: Bundle for Appraisal
       run: bundle
+    - name: Run Rubocop linting
+      run: bundle exec rubocop
     - name: Install Appraisal dependencies
       run: bundle exec appraisal sidekiq-${{ matrix.appraisal }} bundle
     - name: Run tests

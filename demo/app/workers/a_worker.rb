@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AWorker
   include Sidekiq::Worker
   sidekiq_options queue: :a

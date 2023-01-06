@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'simplecov'
 SimpleCov.start
 
@@ -9,7 +11,7 @@ if Sidekiq::LimitFetch.post_7?
   end
 else
   Sidekiq.logger = nil
-  Sidekiq.redis = { namespace: ENV['namespace'] }
+  Sidekiq.redis = { namespace: ENV.fetch('namespace', nil) }
 end
 
 RSpec.configure do |config|
@@ -19,7 +21,7 @@ RSpec.configure do |config|
   config.before do
     Sidekiq::Queue.reset_instances!
     Sidekiq.redis do |it|
-      clean_redis = ->(queue) do
+      clean_redis = lambda do |queue|
         it.pipelined do |pipeline|
           pipeline.del "limit_fetch:limit:#{queue}"
           pipeline.del "limit_fetch:process_limit:#{queue}"
@@ -31,7 +33,7 @@ RSpec.configure do |config|
       end
 
       clean_redis.call(name) if defined?(name)
-      queues.each(&clean_redis) if defined?(queues) and queues.is_a? Array
+      queues.each(&clean_redis) if defined?(queues) && queues.is_a?(Array)
     end
   end
 end

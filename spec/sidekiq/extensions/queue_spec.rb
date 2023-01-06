@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Sidekiq::Queue do
   context 'singleton' do
     shared_examples :constructor do

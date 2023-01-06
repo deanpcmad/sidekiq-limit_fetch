@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
   let(:monitor) { described_class.start! ttl, timeout }
   let(:ttl) { 1 }
@@ -12,11 +14,11 @@ RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
 
     it 'should remove invalidated old locks' do
       2.times { queue.acquire }
-      sleep 2*ttl
+      sleep ttl * 2
       expect(queue.probed).to eq 2
 
       allow(described_class).to receive(:update_heartbeat)
-      sleep 2*ttl
+      sleep ttl * 2
       expect(queue.probed).to eq 0
     end
 
@@ -26,17 +28,16 @@ RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
       Sidekiq.redis do |it|
         it.del Sidekiq::LimitFetch::Global::Monitor::PROCESS_SET
       end
-      sleep 2*ttl
+      sleep ttl * 2
       expect(queue.probed).to eq 0
     end
-
   end
 
   context 'dynamic queue' do
     let(:limits) do
       {
         'queue1' => 3,
-        'queue2' => 3,
+        'queue2' => 3
       }
     end
     let(:queues) { %w[queue1 queue2] }
@@ -44,7 +45,7 @@ RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
 
     let(:config) { Sidekiq::Config.new(options) }
     let(:capsule) do
-      config.capsule("default") do |cap|
+      config.capsule('default') do |cap|
         cap.concurrency = 1
         cap.queues = config[:queues]
       end
@@ -54,7 +55,7 @@ RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
       Sidekiq::LimitFetch.post_7? ? capsule : options
     end
 
-    context "without excluded queue" do
+    context 'without excluded queue' do
       let(:options) do
         {
           limits: limits,
@@ -73,7 +74,7 @@ RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
           it.sadd 'queues', 'queue3'
         end
 
-        sleep 2*ttl
+        sleep ttl * 2
         expect(queue.instance_variable_get(:@queues)).to include('queue3')
 
         Sidekiq.redis do |it|
@@ -82,7 +83,7 @@ RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
       end
     end
 
-    context "with excluded queue" do
+    context 'with excluded queue' do
       let(:options) do
         {
           limits: limits,
@@ -101,7 +102,7 @@ RSpec.describe Sidekiq::LimitFetch::Global::Monitor do
           it.sadd 'queues', 'queue4'
         end
 
-        sleep 2*ttl
+        sleep ttl * 2
         expect(queue.instance_variable_get(:@queues)).not_to include('queue4')
 
         Sidekiq.redis do |it|
