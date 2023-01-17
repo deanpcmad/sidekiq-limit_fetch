@@ -14,8 +14,14 @@ module Sidekiq
       def start(capsule_or_options)
         config = Sidekiq::LimitFetch.post_7? ? capsule_or_options.config : capsule_or_options
 
-        @queues         = config[:queues]
-        @startup_queues = config[:queues].dup
+        @queues = config[:queues].map do |queue|
+          if queue.is_a? Array
+            queue.first
+          else
+            queue
+          end
+        end.uniq
+        @startup_queues = @queues.dup
 
         if config[:dynamic].is_a? Hash
           @dynamic         = true
