@@ -53,7 +53,7 @@ module Sidekiq
       if Sidekiq::BasicFetch.respond_to?(:bulk_requeue) # < 6.1.0
         Sidekiq::BasicFetch.bulk_requeue(*args)
       else # 6.1.0+
-        Sidekiq::BasicFetch.new(config).bulk_requeue(*args)
+        Sidekiq::BasicFetch.new(post_7? ? Sidekiq.default_configuration.default_capsule : config).bulk_requeue(*args)
       end
     end
 
