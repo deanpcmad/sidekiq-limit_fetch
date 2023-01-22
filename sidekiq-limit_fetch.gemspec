@@ -3,7 +3,7 @@
 require 'English'
 Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-limit_fetch'
-  gem.version       = '4.4.0'
+  gem.version       = '4.4.1'
   gem.license       = 'MIT'
   gem.authors       = ['Dean Perry']
   gem.email         = 'dean@deanpcmad.com'
