@@ -142,6 +142,8 @@ module Sidekiq
 
       def apply_process_limit_to_queue(queue_name)
         queue = Sidekiq::Queue[queue_name]
+        return unless queue.process_limit.nil? # honor existing deployed limits
+
         queue.process_limit = @process_limits[queue_name.to_s] || @process_limits[queue_name.to_sym]
       end
 
@@ -155,6 +157,7 @@ module Sidekiq
         queue = Sidekiq::Queue[queue_name]
 
         return if queue.limit_changed?
+        return unless queue.limit.nil? # honor existing deployed limits
 
         queue.limit = @limits[queue_name.to_s] || @limits[queue_name.to_sym]
       end
