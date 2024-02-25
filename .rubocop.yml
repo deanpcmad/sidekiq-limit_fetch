@@ -27,3 +27,8 @@ Naming/VariableNumber:
 Naming/FileName:
   Exclude:
     - lib/sidekiq-limit_fetch.rb
+
+Gemspec/DevelopmentDependencies:
+  EnforcedStyle: gemspec
+  Exclude:
+    - 'demo/*'
