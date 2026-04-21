@@ -55,4 +55,16 @@ RSpec.describe Sidekiq::LimitFetch do
     work = subject.retrieve_work
     expect(work.job).to eq 'task2'
   end
+
+  it 'should release both busy and probed entries on acknowledge' do
+    work = subject.retrieve_work
+
+    expect(Sidekiq::Queue['queue1'].busy).to eq 1
+    expect(Sidekiq::Queue['queue1'].probed).to eq 1
+
+    work.acknowledge
+
+    expect(Sidekiq::Queue['queue1'].busy).to eq 0
+    expect(Sidekiq::Queue['queue1'].probed).to eq 0
+  end
 end

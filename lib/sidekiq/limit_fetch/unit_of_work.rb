@@ -13,8 +13,16 @@ module Sidekiq
       end
 
       def acknowledge
-        redis_retryable { Queue[queue_name].decrease_busy }
-        redis_retryable { Queue[queue_name].release }
+        Queue[queue_name].lock.decrease_local_busy
+
+        redis_retryable do
+          Sidekiq.redis do |conn|
+            conn.multi do |pipeline|
+              pipeline.lrem busy_key, 1, Sidekiq::LimitFetch::Global::Selector.uuid
+              pipeline.lrem probed_key, 1, Sidekiq::LimitFetch::Global::Selector.uuid
+            end
+          end
+        end
       end
 
       def requeue
@@ -26,6 +34,14 @@ module Sidekiq
 
       def post_6_5?
         Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('6.5.0')
+      end
+
+      def busy_key
+        "#{Sidekiq::LimitFetch::Global::Semaphore::PREFIX}:busy:#{queue_name}"
+      end
+
+      def probed_key
+        "#{Sidekiq::LimitFetch::Global::Semaphore::PREFIX}:probed:#{queue_name}"
       end
 
       def redis_retryable(&block)
