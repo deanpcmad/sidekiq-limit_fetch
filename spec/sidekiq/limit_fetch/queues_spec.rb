@@ -124,4 +124,13 @@ RSpec.describe Sidekiq::LimitFetch::Queues do
   it 'with strict flag should retrieve strictly ordered queues' do
     expect(subject.ordered_queues).to eq %w[queue1 queue2]
   end
+
+  context 'queue weights' do
+    it 'keeps the weight-expanded duplicates so weighted ordering still works' do
+      Sidekiq::LimitFetch::Queues.start(queues: %w(a a a b), strict: false)
+
+      expect(Sidekiq::LimitFetch::Queues.instance_variable_get(:@queues).tally)
+        .to eq('a' => 3, 'b' => 1)
+    end
+  end
 end

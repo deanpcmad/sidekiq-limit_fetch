@@ -12,16 +12,20 @@ module Sidekiq
       # rubocop:disable Metrics/MethodLength
       # rubocop:disable Metrics/PerceivedComplexity
       def start(capsule_or_options)
-        config = Sidekiq::LimitFetch.post_7? ? capsule_or_options.config : capsule_or_options
-
-        @queues = config[:queues].map do |queue|
-          if queue.is_a? Array
-            queue.first
-          else
-            queue
-          end
-        end.uniq
-        @startup_queues = @queues.dup
+        if Sidekiq::LimitFetch.post_7?
+          config = capsule_or_options.config
+          # Capsule#queues= has already expanded [name, weight] pairs into
+          # weight-many copies of each name. Keep the duplicates — they are what
+          # weighted_order!'s shuffle.uniq derives the weighted ordering from.
+          @queues = capsule_or_options.queues.dup
+          strict  = capsule_or_options.mode == :strict
+        else
+          config = capsule_or_options
+          # Sidekiq::CLI#parse_queue has already expanded weights the same way.
+          @queues = config[:queues].dup
+          strict  = !!config[:strict]
+        end
+        @startup_queues = @queues.uniq
 
         if config[:dynamic].is_a? Hash
           @dynamic         = true
@@ -35,7 +39,7 @@ module Sidekiq
         @process_limits = config[:process_limits] || {}
         @blocks         = config[:blocking] || []
 
-        config[:strict] ? strict_order! : weighted_order!
+        strict ? strict_order! : weighted_order!
 
         apply_process_limit_to_queues
         apply_limit_to_queues
